@@ -8,6 +8,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // FIX 2: updated ITEM_H to match new card height (120px card + 6px top/bottom margin)
 const ITEM_H = 126;
+const CENTER_OFFSET = 87; // centers card vertically in 300px column
 
 const REEL = [];
 for (let i = 0; i < 8; i++) arcadeGames.forEach((g) => REEL.push(g));
@@ -65,9 +66,14 @@ export default function ArcadeZone() {
       );
     }, sectionRef);
 
-    // initialise reel strip positions
-    reelsRef.current.forEach((el) => {
-      if (el) el.style.transform = `translateY(${ITEM_H}px)`;
+    // initialise reel strip positions (jumbled and centered)
+    const initialTargets = [0, 1, 2]; // jumbled startup symbols (Hangman, BubbleGame, TicTacToe)
+    reelsRef.current.forEach((el, ri) => {
+      if (el) {
+        const startOffset = initialTargets[ri] * ITEM_H;
+        el.style.transform = `translateY(${CENTER_OFFSET - startOffset}px)`;
+        reelsOffset.current[ri] = startOffset;
+      }
     });
 
     return () => ctx.revert();
@@ -116,9 +122,9 @@ export default function ArcadeZone() {
 
       gsap.fromTo(
         reelEl,
-        { y: -startOffset + ITEM_H },
+        { y: -startOffset + CENTER_OFFSET },
         {
-          y: -(targetOffset) + ITEM_H,
+          y: -(targetOffset) + CENTER_OFFSET,
           duration: 1.5 + ri * 0.3,
           ease: "back.out(1.2)",
           onComplete: () => {
