@@ -155,8 +155,8 @@ function Model() {
         THREE.MathUtils.lerp(heroPos.z, navPos.z, progress)
       );
 
-      // bobbing amplitude reduces as the model flies to the navbar
-      const floatY = Math.sin(clock.current * 2) * 0.08 * (1 - progress * 0.85);
+      // bobbing amplitude reduces slightly but remains active in the navbar
+      const floatY = Math.sin(clock.current * 2) * THREE.MathUtils.lerp(0.08, 0.03, progress);
       interpolatedPos.y += floatY;
 
       groupRef.current.position.copy(interpolatedPos);
@@ -173,8 +173,8 @@ function Model() {
 
     // --- Mouse Rotation Tracking ---
     if (!isSpinning.current) {
-      // Scale look sensitivity up (1.0 -> 2.5) and responsiveness lerp factor up (0.05 -> 0.20) as the model docks in the navbar
-      const lookWeight = THREE.MathUtils.lerp(1.0, 2.5, progress);
+      // Scale look sensitivity down (1.0 -> 0.4) and responsiveness lerp factor up (0.05 -> 0.20) as the model docks in the navbar
+      const lookWeight = THREE.MathUtils.lerp(1.0, 0.4, progress);
       targetRotation.current.y = mouse.current.x * 0.6 * lookWeight;
       targetRotation.current.x = mouse.current.y * -0.3 * lookWeight;
 
