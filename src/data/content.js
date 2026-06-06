@@ -1,5 +1,4 @@
 export const contact = {
-  phone: "+91 63782 06977",
   email: "theayushiananta@gmail.com",
   linkedin: "https://linkedin.com/in/ayushi-ananta",
   github: "https://github.com/AyushiAnanta",
