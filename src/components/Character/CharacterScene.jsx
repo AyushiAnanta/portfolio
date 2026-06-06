@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { gsap } from "gsap";
 
 function Model() {
-  const { scene } = useGLTF("/model/avatarfinal.glb");
+  const { scene } = useGLTF("/model/avatarfinal_compressed.glb");
   const groupRef = useRef();
   const clock = useRef(0);
 

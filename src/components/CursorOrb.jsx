@@ -13,7 +13,19 @@ export default function CursorOrb() {
       pos.current.x = e.clientX;
       pos.current.y = e.clientY;
     };
+
+    const onMouseOver = (e) => {
+      if (e.target && e.target.closest("a, button, .btn, [role='button']")) {
+        orbRef.current?.classList.add("cursor-hover");
+        trailRef.current?.classList.add("cursor-hover");
+      } else {
+        orbRef.current?.classList.remove("cursor-hover");
+        trailRef.current?.classList.remove("cursor-hover");
+      }
+    };
+
     window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseover", onMouseOver);
 
     const loop = () => {
       // Smooth lerp so orb lags slightly behind cursor — feels alive
@@ -36,6 +48,7 @@ export default function CursorOrb() {
     raf.current = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseover", onMouseOver);
       cancelAnimationFrame(raf.current);
     };
   }, []);
