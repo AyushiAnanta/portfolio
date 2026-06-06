@@ -6,33 +6,34 @@ import "../../styles/ArcadeZone.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Build the repeated reel array to allow smooth infinite-feeling spin
+// Build repeated reel array for smooth infinite-feeling spin
 const REEL = [];
 for (let i = 0; i < 8; i++) {
   arcadeGames.forEach((g) => REEL.push(g));
 }
-const ITEM_H = 80;
-
+const ITEM_H = 100; // taller items for glassmorphic cards
 
 export default function ArcadeZone() {
   const sectionRef = useRef();
   const titleRef = useRef();
   const introRef = useRef();
+  const cabinetRef = useRef();
   const reelsRef = useRef([]);
   const reelsOffset = useRef([0, 0, 0]);
 
-  const [tokens, setTokens] = useState(10);
+  const [credits, setCredits] = useState(10);
   const [spinning, setSpinning] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
-  const [statusText, setStatusText] = useState("INSERT TOKENS & SPIN SELECTOR");
+  const [statusText, setStatusText] = useState("INSERT COIN & PULL LEVER");
   const [statusColor, setStatusColor] = useState("var(--text-muted)");
 
-  // Interactive Fidget States
+  // Interactive fidget states
   const [leverPulled, setLeverPulled] = useState(false);
   const [isCoinDropping, setIsCoinDropping] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Title + intro entrance
       gsap.fromTo(
         [titleRef.current, introRef.current],
         { opacity: 0, y: 30 },
@@ -48,9 +49,26 @@ export default function ArcadeZone() {
           },
         }
       );
+
+      // Cabinet entrance — fade + rise from bottom
+      gsap.fromTo(
+        cabinetRef.current,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: cabinetRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
     }, sectionRef);
 
-    // Initial positioning of reels to center index 0
+    // Initial reel positioning
     reelsRef.current.forEach((el) => {
       if (el) el.style.transform = `translateY(${ITEM_H}px)`;
     });
@@ -58,16 +76,14 @@ export default function ArcadeZone() {
     return () => ctx.revert();
   }, []);
 
-  const addTokens = () => {
+  const addCredits = () => {
     if (spinning || isCoinDropping) return;
     setIsCoinDropping(true);
-
-    // Trigger visual coin drop, then increment tokens
     setTimeout(() => {
       setIsCoinDropping(false);
-      setTokens((t) => t + 5);
+      setCredits((c) => c + 5);
       if (!spinning) {
-        setStatusText("SELECT GAME TO LAUNCH");
+        setStatusText("READY — PULL LEVER OR SPIN");
         setStatusColor("var(--text-muted)");
       }
     }, 600);
@@ -75,22 +91,21 @@ export default function ArcadeZone() {
 
   const doSpin = () => {
     if (spinning) return;
-    if (tokens <= 0) {
-      setStatusText("OUT OF TOKENS");
+    if (credits <= 0) {
+      setStatusText("OUT OF CREDITS");
       setStatusColor("var(--accent)");
       return;
     }
 
-    setTokens((t) => t - 1);
+    setCredits((c) => c - 1);
     setSpinning(true);
     setSelectedGame(null);
-    setStatusText("SHUFFLING ARCHIVE...");
+    setStatusText("SPINNING...");
     setStatusColor("var(--purple-light)");
 
-    // Synchronize to land on the same game symbol (Jackpot style!)
+    // Jackpot sync — all three land on the same game
     const targetIndex = Math.floor(Math.random() * arcadeGames.length);
     const targets = [targetIndex, targetIndex, targetIndex];
-
     const spins = 4;
     let completed = 0;
 
@@ -101,7 +116,6 @@ export default function ArcadeZone() {
       const totalH = arcadeGames.length * ITEM_H;
       const targetOffset = (spins * arcadeGames.length + targets[ri]) * ITEM_H;
       const startOffset = reelsOffset.current[ri];
-
       const startY = -startOffset + ITEM_H;
       const targetY = -targetOffset + ITEM_H;
 
@@ -110,30 +124,30 @@ export default function ArcadeZone() {
         { y: startY },
         {
           y: targetY,
-          duration: 1.5 + ri * 0.3, // Exactly 300ms stagger!
-          ease: "back.out(1.2)", // Rubber band bounce and settle ease
+          duration: 1.5 + ri * 0.3, // 300ms stagger: 1.5s, 1.8s, 2.1s
+          ease: "back.out(1.2)",
           onComplete: () => {
             reelsOffset.current[ri] = targetOffset % totalH;
-            // Highlight target item inside the column
+
+            // Apply neon highlight frame to settled target items
             const items = reelEl.children;
+            const game = arcadeGames[targets[ri] % arcadeGames.length];
             for (let i = 0; i < items.length; i++) {
-              const imgEl = items[i].querySelector(".arcade-cabinet__reel-img");
-              const nameEl = items[i].querySelector(".arcade-cabinet__reel-name");
+              const card = items[i];
               const isTarget = i % arcadeGames.length === targets[ri] % arcadeGames.length;
-              if (imgEl) {
-                imgEl.style.boxShadow = isTarget ? `0 0 10px ${arcadeGames[targets[ri] % arcadeGames.length].color}66` : "";
-                imgEl.style.borderColor = isTarget ? arcadeGames[targets[ri] % arcadeGames.length].color : "";
-              }
-              if (nameEl) {
-                nameEl.style.color = isTarget ? "#fff" : "var(--text-muted)";
+              if (isTarget) {
+                card.style.boxShadow = `0 0 16px ${game.color}44, inset 0 0 8px ${game.color}11`;
+                card.style.borderColor = game.color;
+              } else {
+                card.style.boxShadow = "";
+                card.style.borderColor = "";
               }
             }
 
             completed++;
             if (completed === 3) {
               setSpinning(false);
-              const loadedGame = arcadeGames[targets[1]];
-              setSelectedGame(loadedGame);
+              setSelectedGame(arcadeGames[targets[1]]);
             }
           },
         }
@@ -145,9 +159,7 @@ export default function ArcadeZone() {
     if (spinning) return;
     setLeverPulled(true);
     doSpin();
-    setTimeout(() => {
-      setLeverPulled(false);
-    }, 400); // Springs back after 400ms
+    setTimeout(() => setLeverPulled(false), 400);
   };
 
   return (
@@ -156,72 +168,69 @@ export default function ArcadeZone() {
         <p className="arcade__tag">— interactive zone</p>
         <h2 className="arcade__title" ref={titleRef}>Arcade Zone</h2>
         <p className="arcade__intro" ref={introRef}>
-          These are games that I built initially in my journey that helped me in logic building and sparked my interest in this field.
+          A collection of early builds from the start of my coding journey — these simple projects
+          laid the foundation for my logic building and ignited my passion for software engineering.
         </p>
 
-        {/* Curved Glass Arcade Cabinet */}
-        <div className="arcade-cabinet">
-          {/* Cabinet Top Header */}
-          <div className="arcade-cabinet__top">
-            <div className="marquee-led led-left" />
-            <div className="arcade-cabinet__marquee">
-              <div className="arcade-cabinet__marquee-glowing-title">GAME ZONE</div>
-              <div className="arcade-cabinet__marquee-subtitle">
-                INSERT TOKEN · SHUFFLE INDEX
-              </div>
-            </div>
-            <div className="marquee-led led-right" />
+        {/* ═══ ARCADE CABINET ═══ */}
+        <div className="arcade-cabinet" ref={cabinetRef}>
+
+          {/* ── 1. MARQUEE ARCH ── */}
+          <div className="cabinet__marquee">
+            <div className="cabinet__marquee-glow" />
+            <div className="marquee-led marquee-led--left" />
+            <div className="cabinet__marquee-text">GAME ZONE</div>
+            <div className="marquee-led marquee-led--right" />
           </div>
 
-          {/* Cabinet Screen */}
-          <div className="arcade-cabinet__screen">
-            {/* Subtle Screen Scanline/CRT overlay */}
-            <div className="arcade-cabinet__crt-overlay" />
-            
-            {/* Screen Header */}
-            <div className="arcade-cabinet__screen-header">
-              <div className="arcade-cabinet__sys-status">SYS://GAME_SHUFFLE</div>
-              <div className="arcade-cabinet__credits">
-                TOKENS: {String(tokens).padStart(2, "0")}
-              </div>
+          {/* ── 2. SCREEN BEZEL ── */}
+          <div className="cabinet__screen">
+            <div className="cabinet__crt-overlay" />
+
+            {/* Screen header row */}
+            <div className="cabinet__screen-header">
+              <span className="cabinet__sys-label">SYS://GAME_SELECT</span>
+              <span className={`cabinet__credits ${credits <= 2 ? "cabinet__credits--low" : ""}`}>
+                CREDITS: {String(credits).padStart(2, "0")}
+              </span>
             </div>
 
-            {/* Cabinet Reels Slot */}
-            <div className="arcade-cabinet__reels-wrapper">
-              <div className="arcade-cabinet__reels-box">
-                {/* Center target cursor guide */}
+            {/* ── 3. THREE VERTICAL REELS ── */}
+            <div className="cabinet__reels-viewport">
+              <div className="cabinet__reels-row">
+                {/* Center highlight frame */}
                 <div
-                  className="arcade-cabinet__indicator"
+                  className="cabinet__reel-highlight"
                   style={{
                     borderColor: selectedGame ? `${selectedGame.color}99` : "rgba(255,255,255,0.06)",
                     boxShadow: selectedGame
-                      ? `0 0 20px ${selectedGame.color}22, inset 0 0 20px ${selectedGame.color}05`
+                      ? `0 0 24px ${selectedGame.color}33, inset 0 0 24px ${selectedGame.color}08`
                       : "none",
                   }}
                 />
 
                 {[0, 1, 2].map((ri) => (
-                  <div className="arcade-cabinet__reel-col" key={ri}>
-                    <div className="arcade-cabinet__reel-fade" />
+                  <div className="cabinet__reel-col" key={ri}>
+                    <div className="cabinet__reel-fade" />
                     <div
-                      className="arcade-cabinet__reel-inner"
+                      className="cabinet__reel-strip"
                       ref={(el) => (reelsRef.current[ri] = el)}
                     >
                       {REEL.map((g, idx) => (
-                        <div className="arcade-cabinet__reel-item" key={idx}>
+                        <div
+                          className="cabinet__reel-card"
+                          key={idx}
+                          style={{ borderColor: `${g.color}15` }}
+                        >
+                          <div
+                            className="cabinet__reel-glow-ring"
+                            style={{ boxShadow: `0 0 12px ${g.color}33` }}
+                          />
                           <img
                             src={g.image}
                             alt={g.name}
-                            className="arcade-cabinet__reel-img"
-                            style={{
-                              width: "36px",
-                              height: "36px",
-                              borderRadius: "6px",
-                              border: `1.5px solid ${g.color}33`,
-                              objectFit: "cover"
-                            }}
+                            className="cabinet__reel-icon"
                           />
-                          <div className="arcade-cabinet__reel-name">{g.name}</div>
                         </div>
                       ))}
                     </div>
@@ -229,139 +238,120 @@ export default function ArcadeZone() {
                 ))}
               </div>
             </div>
-
-            {/* Selected Result Screen */}
-            <div className="arcade-cabinet__result-area">
-              {!selectedGame ? (
-                <div
-                  className="arcade-cabinet__status-text"
-                  style={{ color: statusColor }}
-                >
-                  {statusText}
-                </div>
-              ) : (
-                <div
-                  className="arcade-cabinet__result-panel"
-                  style={{
-                    background: `${selectedGame.color}05`,
-                    border: `1px solid ${selectedGame.color}22`,
-                  }}
-                >
-                  <img
-                    src={selectedGame.image}
-                    alt={selectedGame.name}
-                    className="arcade-cabinet__result-preview"
-                  />
-                  <div className="arcade-cabinet__result-info">
-                    <div
-                      className="arcade-cabinet__result-tag"
-                      style={{ color: selectedGame.color }}
-                    >
-                      // INDEX LOADED
-                    </div>
-                    <div className="arcade-cabinet__result-title">
-                      {selectedGame.name}
-                    </div>
-                    <div className="arcade-cabinet__result-desc">
-                      {selectedGame.desc}
-                    </div>
-                  </div>
-                  <a
-                    href={selectedGame.play}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn--ghost arcade-cabinet__result-play-btn"
-                    style={{
-                      borderColor: `${selectedGame.color}66`,
-                      color: selectedGame.color,
-                    }}
-                  >
-                    PLAY GAME →
-                  </a>
-                </div>
-              )}
-            </div>
           </div>
 
-          {/* Integrated All Games Row */}
-          <div className="arcade-cabinet__all-games">
-            <div className="arcade-cabinet__all-games-title">ALL PROJECTS</div>
-            <div className="arcade-cabinet__games-grid">
-              {arcadeGames.map((g) => (
-                <a
-                  href={g.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="arcade-cabinet__game-link"
-                  key={g.name}
-                >
-                  <span
-                    className="arcade-cabinet__game-dot"
-                    style={{
-                      backgroundColor: g.color,
-                      boxShadow: `0 0 8px ${g.color}`
-                    }}
-                  />
-                  <img
-                    src={g.image}
-                    alt={g.name}
-                    className="arcade-cabinet__game-thumb"
-                    style={{
-                      width: "28px",
-                      height: "28px",
-                      borderRadius: "6px",
-                      border: `1px solid ${g.color}33`,
-                      objectFit: "cover"
-                    }}
-                  />
-                  <div className="arcade-cabinet__game-text">
-                    <div className="arcade-cabinet__game-name">{g.name}</div>
-                    <div className="arcade-cabinet__game-tag">{g.tag}</div>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
+          {/* ── 4. PHYSICAL CONTROLS BAR ── */}
+          <div className="cabinet__controls">
 
-          {/* Interactive Console Deck (Fidgets Area) */}
-          <div className="arcade-cabinet__deck">
-            {/* Left: Tactile Coin Slot */}
-            <div className="arcade-cabinet__coin-wrapper">
-              <div 
-                className={`arcade-cabinet__coin-slot ${isCoinDropping ? "dropping" : ""}`}
-                onClick={addTokens}
+            {/* Coin Slot */}
+            <div className="cabinet__ctrl-group">
+              <div
+                className={`cabinet__coin-slot ${isCoinDropping ? "dropping" : ""}`}
+                onClick={addCredits}
               >
-                {/* Floating Token animation */}
-                <div className="arcade-cabinet__falling-coin">🪙</div>
-                <div className="arcade-cabinet__slot-glowing-opening" />
+                <div className="cabinet__coin-emoji">🪙</div>
+                <div className="cabinet__coin-slit">
+                  <div className="cabinet__coin-slit-line" />
+                  <div className="cabinet__coin-slit-line" />
+                </div>
               </div>
-              <div className="arcade-cabinet__control-label">+INSERT COIN</div>
+              <span className="cabinet__ctrl-label">INSERT COIN</span>
             </div>
 
-            {/* Center: Glowing Dome Push Button */}
-            <div className="arcade-cabinet__button-wrapper">
+            {/* SPIN Dome Button */}
+            <div className="cabinet__ctrl-group">
               <button
-                className={`arcade-cabinet__dome-btn ${spinning ? "pressed" : ""}`}
+                className={`cabinet__dome-btn ${spinning ? "cabinet__dome-btn--pressed" : ""}`}
                 onClick={doSpin}
                 disabled={spinning}
               >
                 SPIN
               </button>
-              <div className="arcade-cabinet__control-label">LAUNCH</div>
+              <span className="cabinet__ctrl-label">SPIN</span>
             </div>
 
-            {/* Right: Spring-loaded 3D Pull Lever */}
-            <div className="arcade-cabinet__lever-wrapper">
-              <div 
-                className={`arcade-cabinet__lever ${leverPulled ? "pulled" : ""}`}
+            {/* Lever */}
+            <div className="cabinet__ctrl-group">
+              <div
+                className={`cabinet__lever ${leverPulled ? "cabinet__lever--pulled" : ""}`}
                 onClick={handleLeverPull}
               >
-                <div className="arcade-cabinet__lever-base" />
-                <div className="arcade-cabinet__lever-shaft">
-                  <div className="arcade-cabinet__lever-ball" />
+                <div className="cabinet__lever-base" />
+                <div className="cabinet__lever-shaft">
+                  <div className="cabinet__lever-ball" />
                 </div>
               </div>
-              <div className="arcade-cabinet__control-label">PULL LEVER</div>
+              <span className="cabinet__ctrl-label">PULL</span>
+            </div>
+          </div>
+
+          {/* ── 5. RESULT PANEL ── */}
+          <div className="cabinet__result-area">
+            {!selectedGame ? (
+              <div className="cabinet__status" style={{ color: statusColor }}>
+                {statusText}
+              </div>
+            ) : (
+              <div
+                className="cabinet__result-card"
+                style={{
+                  borderColor: `${selectedGame.color}33`,
+                  background: `${selectedGame.color}08`,
+                }}
+              >
+                <img
+                  src={selectedGame.image}
+                  alt={selectedGame.name}
+                  className="cabinet__result-img"
+                />
+                <div className="cabinet__result-info">
+                  <div className="cabinet__result-name">{selectedGame.name}</div>
+                  <div className="cabinet__result-desc">{selectedGame.desc}</div>
+                </div>
+                <a
+                  href={selectedGame.play}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cabinet__result-play"
+                  style={{
+                    borderColor: `${selectedGame.color}66`,
+                    color: selectedGame.color,
+                  }}
+                >
+                  PLAY →
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* ── 6. ALL GAMES ROW ── */}
+          <div className="cabinet__all-games">
+            <div className="cabinet__all-games-label">ALL GAMES</div>
+            <div className="cabinet__all-games-row">
+              {arcadeGames.map((g) => (
+                <a
+                  href={g.play}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cabinet__game-chip"
+                  key={g.name}
+                >
+                  <img
+                    src={g.image}
+                    alt={g.name}
+                    className="cabinet__game-chip-img"
+                    style={{ border: `2px solid ${g.color}44` }}
+                  />
+                  <span className="cabinet__game-chip-name">{g.name}</span>
+                  <span
+                    className="cabinet__game-chip-dot"
+                    style={{
+                      backgroundColor: g.color,
+                      boxShadow: `0 0 6px ${g.color}`,
+                    }}
+                  />
+                </a>
+              ))}
             </div>
           </div>
         </div>
@@ -369,4 +359,3 @@ export default function ArcadeZone() {
     </section>
   );
 }
-
