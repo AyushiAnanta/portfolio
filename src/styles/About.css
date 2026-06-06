@@ -1,0 +1,131 @@
+.about {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 8vw;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle background glow */
+.about::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(
+    circle,
+    rgba(58, 123, 213, 0.08) 0%,
+    transparent 70%
+  );
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.about__inner {
+  max-width: 1000px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+  z-index: 1;
+}
+
+.about__tag {
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purple-light);
+  opacity: 0;
+}
+
+.about__headline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.about__headline h2 {
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  opacity: 0;
+  /* overflow: hidden â€” removed so skewY is visible during anim */
+}
+
+.about__highlight {
+  background: linear-gradient(135deg, var(--accent), var(--purple-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about__highlight--blue {
+  background: linear-gradient(135deg, var(--blue-light), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.about__bio {
+  max-width: 680px;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.8;
+  color: var(--text-muted);
+  opacity: 0;
+}
+
+/* Stats row */
+.about__stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.about__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  opacity: 0;
+}
+
+.about__stat-value {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--purple-light), var(--blue-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.about__stat-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Divider line between hero and about */
+.about__divider {
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--purple), transparent);
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .about {
+    padding: 6rem 6vw;
+  }
+  .about__stats {
+    gap: 2rem;
+  }
+}

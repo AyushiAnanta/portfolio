@@ -1,0 +1,40 @@
+/* Hide default cursor site-wide */
+*, *::before, *::after { cursor: none !important; }
+
+.cursor-orb {
+  position: fixed;
+  top: 0; left: 0;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #c084fc, #3a7bd5);
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: screen;
+  box-shadow:
+    0 0 8px #c084fc,
+    0 0 20px #7b5ea7,
+    0 0 40px rgba(123, 94, 167, 0.4);
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+
+.cursor-trail {
+  position: fixed;
+  top: 0; left: 0;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  pointer-events: none;
+  z-index: 99998;
+  background: radial-gradient(
+    circle,
+    rgba(192, 132, 252, 0.08) 0%,
+    transparent 70%
+  );
+}
+
+/* Orb reacts to hovering links/buttons */
+a:hover ~ .cursor-orb,
+button:hover ~ .cursor-orb {
+  width: 30px;
+  height: 30px;
+}
