@@ -6,9 +6,16 @@ import "../../styles/ArcadeZone.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// FIX 2: updated ITEM_H to match new card height (120px card + 6px top/bottom margin)
-const ITEM_H = 126;
-const CENTER_OFFSET = 87; // centers card vertically in 300px column
+const getReelDimensions = () => {
+  const width = window.innerWidth;
+  if (width <= 480) {
+    return { itemH: 96, centerOffset: 67 };
+  } else if (width <= 768) {
+    return { itemH: 108, centerOffset: 76 };
+  } else {
+    return { itemH: 126, centerOffset: 87 };
+  }
+};
 
 const REEL = [];
 for (let i = 0; i < 8; i++) arcadeGames.forEach((g) => REEL.push(g));
@@ -67,16 +74,32 @@ export default function ArcadeZone() {
     }, sectionRef);
 
     // initialise reel strip positions (jumbled and centered)
+    const { itemH, centerOffset } = getReelDimensions();
     const initialTargets = [0, 1, 2]; // jumbled startup symbols (Hangman, BubbleGame, TicTacToe)
     reelsRef.current.forEach((el, ri) => {
       if (el) {
-        const startOffset = initialTargets[ri] * ITEM_H;
-        el.style.transform = `translateY(${CENTER_OFFSET - startOffset}px)`;
-        reelsOffset.current[ri] = startOffset;
+        const startOffset = initialTargets[ri] * itemH;
+        el.style.transform = `translateY(${centerOffset - startOffset}px)`;
+        reelsOffset.current[ri] = initialTargets[ri];
       }
     });
 
-    return () => ctx.revert();
+    const handleResize = () => {
+      const { itemH, centerOffset } = getReelDimensions();
+      reelsRef.current.forEach((el, ri) => {
+        if (el) {
+          const startOffset = reelsOffset.current[ri] * itemH;
+          el.style.transform = `translateY(${centerOffset - startOffset}px)`;
+        }
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      ctx.revert();
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const addCredits = () => {
@@ -112,29 +135,35 @@ export default function ArcadeZone() {
     const spins = 4;
     let completed = 0;
 
+    const { itemH, centerOffset } = getReelDimensions();
+
     [0, 1, 2].forEach((ri) => {
       const reelEl = reelsRef.current[ri];
       if (!reelEl) return;
 
-      const totalH      = arcadeGames.length * ITEM_H;
-      const targetOffset = (spins * arcadeGames.length + targets[ri]) * ITEM_H;
-      const startOffset  = reelsOffset.current[ri];
+      const targetSymbolIndex = targets[ri];
+      const startSymbolIndex = reelsOffset.current[ri];
+
+      const startOffset  = startSymbolIndex * itemH;
+      const targetOffset = (spins * arcadeGames.length + targetSymbolIndex) * itemH;
 
       gsap.fromTo(
         reelEl,
-        { y: -startOffset + CENTER_OFFSET },
+        { y: -startOffset + centerOffset },
         {
-          y: -(targetOffset) + CENTER_OFFSET,
+          y: -targetOffset + centerOffset,
           duration: 1.5 + ri * 0.3,
           ease: "back.out(1.2)",
           onComplete: () => {
-            reelsOffset.current[ri] = targetOffset % totalH;
+            const baseSymbolIndex = targetSymbolIndex % arcadeGames.length;
+            reelsOffset.current[ri] = baseSymbolIndex;
+            gsap.set(reelEl, { y: -baseSymbolIndex * itemH + centerOffset });
 
             // highlight the landed card
             const items = reelEl.children;
-            const game  = arcadeGames[targets[ri] % arcadeGames.length];
+            const game  = arcadeGames[baseSymbolIndex];
             for (let i = 0; i < items.length; i++) {
-              const isTarget = i % arcadeGames.length === targets[ri] % arcadeGames.length;
+              const isTarget = i % arcadeGames.length === baseSymbolIndex;
               items[i].style.boxShadow   = isTarget ? `0 0 18px ${game.color}55, inset 0 0 10px ${game.color}15` : "";
               items[i].style.borderColor = isTarget ? game.color : "";
             }

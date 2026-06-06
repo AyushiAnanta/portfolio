@@ -7,15 +7,28 @@ export default function CursorOrb() {
   const pos = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const raf = useRef();
+  const lastTouchTime = useRef(0);
 
   useEffect(() => {
     const onMove = (e) => {
+      // Ignore touch-emulated mouse events
+      if (Date.now() - lastTouchTime.current < 1000) {
+        return;
+      }
+      
+      orbRef.current?.classList.remove("cursor-hidden");
+      trailRef.current?.classList.remove("cursor-hidden");
+
       pos.current.x = e.clientX;
       pos.current.y = e.clientY;
     };
 
     const onMouseOver = (e) => {
-      if (e.target && e.target.closest("a, button, .btn, [role='button']")) {
+      if (Date.now() - lastTouchTime.current < 1000) {
+        return;
+      }
+
+      if (e.target && e.target.closest("a, button, .btn, [role='button'], .cab-coin")) {
         orbRef.current?.classList.add("cursor-hover");
         trailRef.current?.classList.add("cursor-hover");
       } else {
@@ -24,8 +37,30 @@ export default function CursorOrb() {
       }
     };
 
+    const onMouseDown = () => {
+      if (Date.now() - lastTouchTime.current < 1000) {
+        return;
+      }
+      orbRef.current?.classList.add("cursor-active");
+      trailRef.current?.classList.add("cursor-active");
+    };
+
+    const onMouseUp = () => {
+      orbRef.current?.classList.remove("cursor-active");
+      trailRef.current?.classList.remove("cursor-active");
+    };
+
+    const onTouchStart = () => {
+      lastTouchTime.current = Date.now();
+      orbRef.current?.classList.add("cursor-hidden");
+      trailRef.current?.classList.add("cursor-hidden");
+    };
+
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseover", onMouseOver);
+    window.addEventListener("mousedown", onMouseDown);
+    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
 
     const loop = () => {
       // Smooth lerp so orb lags slightly behind cursor — feels alive
@@ -49,6 +84,9 @@ export default function CursorOrb() {
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseover", onMouseOver);
+      window.removeEventListener("mousedown", onMouseDown);
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("touchstart", onTouchStart);
       cancelAnimationFrame(raf.current);
     };
   }, []);
