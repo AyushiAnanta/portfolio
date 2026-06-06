@@ -6,18 +6,17 @@ import "../../styles/ArcadeZone.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Build repeated reel array for smooth infinite-feeling spin
 const REEL = [];
-for (let i = 0; i < 8; i++) {
-  arcadeGames.forEach((g) => REEL.push(g));
-}
-const ITEM_H = 100; // taller items for glassmorphic cards
+for (let i = 0; i < 8; i++) arcadeGames.forEach((g) => REEL.push(g));
+const ITEM_H = 110;
 
 export default function ArcadeZone() {
   const sectionRef = useRef();
   const titleRef = useRef();
   const introRef = useRef();
   const cabinetRef = useRef();
+  const controlsRef = useRef();
+  const dockRef = useRef();
   const reelsRef = useRef([]);
   const reelsOffset = useRef([0, 0, 0]);
 
@@ -26,53 +25,48 @@ export default function ArcadeZone() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [statusText, setStatusText] = useState("INSERT COIN & PULL LEVER");
   const [statusColor, setStatusColor] = useState("var(--text-muted)");
-
-  // Interactive fidget states
   const [leverPulled, setLeverPulled] = useState(false);
   const [isCoinDropping, setIsCoinDropping] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Title + intro entrance
+      // Title + intro
       gsap.fromTo(
         [titleRef.current, introRef.current],
         { opacity: 0, y: 30 },
         {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.1,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
+          opacity: 1, y: 0, duration: 0.6, stagger: 0.1,
+          scrollTrigger: { trigger: sectionRef.current, start: "top 80%", toggleActions: "play none none reverse" },
         }
       );
 
-      // Cabinet entrance — fade + rise from bottom
-      gsap.fromTo(
-        cabinetRef.current,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: cabinetRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }
+      // Cabinet entrance — scale up + rise
+      const cabTl = gsap.timeline({
+        scrollTrigger: { trigger: cabinetRef.current, start: "top 85%", toggleActions: "play none none reverse" },
+      });
+      cabTl.fromTo(cabinetRef.current,
+        { opacity: 0, scale: 0.92, y: 50 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "power3.out" }
       );
+      // Controls deck fades in 150ms after
+      cabTl.fromTo(controlsRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        "-=0.65"
+      );
+      // Dock chips stagger in
+      if (dockRef.current) {
+        cabTl.fromTo(dockRef.current.children,
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.1, ease: "power3.out" },
+          "-=0.35"
+        );
+      }
     }, sectionRef);
 
-    // Initial reel positioning
     reelsRef.current.forEach((el) => {
       if (el) el.style.transform = `translateY(${ITEM_H}px)`;
     });
-
     return () => ctx.revert();
   }, []);
 
@@ -82,28 +76,19 @@ export default function ArcadeZone() {
     setTimeout(() => {
       setIsCoinDropping(false);
       setCredits((c) => c + 5);
-      if (!spinning) {
-        setStatusText("READY — PULL LEVER OR SPIN");
-        setStatusColor("var(--text-muted)");
-      }
+      if (!spinning) { setStatusText("READY — PULL LEVER OR SPIN"); setStatusColor("var(--text-muted)"); }
     }, 600);
   };
 
   const doSpin = () => {
     if (spinning) return;
-    if (credits <= 0) {
-      setStatusText("OUT OF CREDITS");
-      setStatusColor("var(--accent)");
-      return;
-    }
-
+    if (credits <= 0) { setStatusText("OUT OF CREDITS"); setStatusColor("var(--accent)"); return; }
     setCredits((c) => c - 1);
     setSpinning(true);
     setSelectedGame(null);
     setStatusText("SPINNING...");
     setStatusColor("var(--purple-light)");
 
-    // Jackpot sync — all three land on the same game
     const targetIndex = Math.floor(Math.random() * arcadeGames.length);
     const targets = [targetIndex, targetIndex, targetIndex];
     const spins = 4;
@@ -112,43 +97,27 @@ export default function ArcadeZone() {
     [0, 1, 2].forEach((ri) => {
       const reelEl = reelsRef.current[ri];
       if (!reelEl) return;
-
       const totalH = arcadeGames.length * ITEM_H;
       const targetOffset = (spins * arcadeGames.length + targets[ri]) * ITEM_H;
       const startOffset = reelsOffset.current[ri];
-      const startY = -startOffset + ITEM_H;
-      const targetY = -targetOffset + ITEM_H;
 
-      gsap.fromTo(
-        reelEl,
-        { y: startY },
+      gsap.fromTo(reelEl,
+        { y: -startOffset + ITEM_H },
         {
-          y: targetY,
-          duration: 1.5 + ri * 0.3, // 300ms stagger: 1.5s, 1.8s, 2.1s
+          y: -targetOffset + ITEM_H,
+          duration: 1.5 + ri * 0.3,
           ease: "back.out(1.2)",
           onComplete: () => {
             reelsOffset.current[ri] = targetOffset % totalH;
-
-            // Apply neon highlight frame to settled target items
             const items = reelEl.children;
             const game = arcadeGames[targets[ri] % arcadeGames.length];
             for (let i = 0; i < items.length; i++) {
-              const card = items[i];
               const isTarget = i % arcadeGames.length === targets[ri] % arcadeGames.length;
-              if (isTarget) {
-                card.style.boxShadow = `0 0 16px ${game.color}44, inset 0 0 8px ${game.color}11`;
-                card.style.borderColor = game.color;
-              } else {
-                card.style.boxShadow = "";
-                card.style.borderColor = "";
-              }
+              items[i].style.boxShadow = isTarget ? `0 0 18px ${game.color}55, inset 0 0 10px ${game.color}15` : "";
+              items[i].style.borderColor = isTarget ? game.color : "";
             }
-
             completed++;
-            if (completed === 3) {
-              setSpinning(false);
-              setSelectedGame(arcadeGames[targets[1]]);
-            }
+            if (completed === 3) { setSpinning(false); setSelectedGame(arcadeGames[targets[1]]); }
           },
         }
       );
@@ -172,187 +141,124 @@ export default function ArcadeZone() {
           laid the foundation for my logic building and ignited my passion for software engineering.
         </p>
 
-        {/* ═══ ARCADE CABINET ═══ */}
-        <div className="arcade-cabinet" ref={cabinetRef}>
+        {/* ═══ 3D CABINET SCENE ═══ */}
+        <div className="cab-scene">
+          <div className="cab-3d" ref={cabinetRef}>
 
-          {/* ── 1. MARQUEE ARCH ── */}
-          <div className="cabinet__marquee">
-            <div className="cabinet__marquee-glow" />
-            <div className="marquee-led marquee-led--left" />
-            <div className="cabinet__marquee-text">GAME ZONE</div>
-            <div className="marquee-led marquee-led--right" />
-          </div>
-
-          {/* ── 2. SCREEN BEZEL ── */}
-          <div className="cabinet__screen">
-            <div className="cabinet__crt-overlay" />
-
-            {/* Screen header row */}
-            <div className="cabinet__screen-header">
-              <span className="cabinet__sys-label">SYS://GAME_SELECT</span>
-              <span className={`cabinet__credits ${credits <= 2 ? "cabinet__credits--low" : ""}`}>
-                CREDITS: {String(credits).padStart(2, "0")}
-              </span>
+            {/* ── MARQUEE ARCH ── */}
+            <div className="cab-arch">
+              <div className="cab-arch__glow" />
+              <div className="cab-arch__led cab-arch__led--l" />
+              <div className="cab-arch__led cab-arch__led--r" />
+              <div className="cab-arch__led cab-arch__led--l2" />
+              <div className="cab-arch__led cab-arch__led--r2" />
+              <span className="cab-arch__title">GAME ZONE</span>
             </div>
 
-            {/* ── 3. THREE VERTICAL REELS ── */}
-            <div className="cabinet__reels-viewport">
-              <div className="cabinet__reels-row">
-                {/* Center highlight frame */}
-                <div
-                  className="cabinet__reel-highlight"
-                  style={{
-                    borderColor: selectedGame ? `${selectedGame.color}99` : "rgba(255,255,255,0.06)",
-                    boxShadow: selectedGame
-                      ? `0 0 24px ${selectedGame.color}33, inset 0 0 24px ${selectedGame.color}08`
-                      : "none",
-                  }}
-                />
+            {/* ── CABINET BODY ── */}
+            <div className="cab-body">
+              {/* 3D side faces */}
+              <div className="cab-side cab-side--left" />
+              <div className="cab-side cab-side--right" />
+              {/* Specular highlight stripe */}
+              <div className="cab-body__specular" />
 
-                {[0, 1, 2].map((ri) => (
-                  <div className="cabinet__reel-col" key={ri}>
-                    <div className="cabinet__reel-fade" />
+              {/* ── SCREEN BEZEL ── */}
+              <div className="cab-screen">
+                <div className="cab-screen__crt" />
+                <div className="cab-screen__header">
+                  <span className="cab-screen__sys">SYS://GAME_SELECT</span>
+                  <span className={`cab-screen__credits ${credits <= 2 ? "cab-screen__credits--low" : ""}`}>
+                    CREDITS: {String(credits).padStart(2, "0")}
+                  </span>
+                </div>
+
+                {/* ── REELS ── */}
+                <div className="cab-reels">
+                  <span className="cab-reels__arrow cab-reels__arrow--l">◀</span>
+                  <div className="cab-reels__row">
                     <div
-                      className="cabinet__reel-strip"
-                      ref={(el) => (reelsRef.current[ri] = el)}
-                    >
-                      {REEL.map((g, idx) => (
-                        <div
-                          className="cabinet__reel-card"
-                          key={idx}
-                          style={{ borderColor: `${g.color}15` }}
-                        >
-                          <div
-                            className="cabinet__reel-glow-ring"
-                            style={{ boxShadow: `0 0 12px ${g.color}33` }}
-                          />
-                          <img
-                            src={g.image}
-                            alt={g.name}
-                            className="cabinet__reel-icon"
-                          />
+                      className="cab-reels__highlight"
+                      style={{
+                        borderColor: selectedGame ? `${selectedGame.color}aa` : "rgba(255,255,255,0.06)",
+                        boxShadow: selectedGame ? `0 0 20px ${selectedGame.color}44, inset 0 0 20px ${selectedGame.color}0a` : "none",
+                      }}
+                    />
+                    {[0, 1, 2].map((ri) => (
+                      <div className="cab-reels__col" key={ri}>
+                        <div className="cab-reels__fade" />
+                        <div className="cab-reels__strip" ref={(el) => (reelsRef.current[ri] = el)}>
+                          {REEL.map((g, idx) => (
+                            <div className="cab-reels__card" key={idx} style={{ borderColor: `${g.color}12` }}>
+                              <div className="cab-reels__glow" style={{ boxShadow: `0 0 14px ${g.color}30` }} />
+                              <img src={g.image} alt={g.name} className="cab-reels__icon" />
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
+                  <span className="cab-reels__arrow cab-reels__arrow--r">▶</span>
+                </div>
+              </div>
+
+              {/* ── RESULT PANEL ── */}
+              <div className="cab-result">
+                {!selectedGame ? (
+                  <div className="cab-result__status" style={{ color: statusColor }}>{statusText}</div>
+                ) : (
+                  <div className="cab-result__card" style={{ borderColor: `${selectedGame.color}33`, background: `${selectedGame.color}08` }}>
+                    <img src={selectedGame.image} alt={selectedGame.name} className="cab-result__img" />
+                    <div className="cab-result__info">
+                      <div className="cab-result__name">{selectedGame.name}</div>
+                      <div className="cab-result__desc">{selectedGame.desc}</div>
+                    </div>
+                    <a href={selectedGame.play} target="_blank" rel="noopener noreferrer" className="cab-result__play" style={{ borderColor: `${selectedGame.color}66`, color: selectedGame.color }}>
+                      PLAY →
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* ── CONTROLS DECK ── */}
+              <div className="cab-controls" ref={controlsRef}>
+                {/* Coin Slot */}
+                <div className="cab-ctrl">
+                  <div className={`cab-coin ${isCoinDropping ? "dropping" : ""}`} onClick={addCredits}>
+                    <div className="cab-coin__emoji">🪙</div>
+                    <div className="cab-coin__slit"><div className="cab-coin__line" /><div className="cab-coin__line" /></div>
+                  </div>
+                  <span className="cab-ctrl__label">INSERT COIN</span>
+                </div>
+                {/* SPIN */}
+                <div className="cab-ctrl">
+                  <button className={`cab-spin ${spinning ? "cab-spin--pressed" : ""}`} onClick={doSpin} disabled={spinning}>SPIN</button>
+                  <span className="cab-ctrl__label">SPIN</span>
+                </div>
+                {/* Lever */}
+                <div className="cab-ctrl">
+                  <div className={`cab-lever ${leverPulled ? "cab-lever--pulled" : ""}`} onClick={handleLeverPull}>
+                    <div className="cab-lever__base" />
+                    <div className="cab-lever__shaft"><div className="cab-lever__ball" /></div>
+                  </div>
+                  <span className="cab-ctrl__label">PULL</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ── BASE PEDESTAL ── */}
+            <div className="cab-base">
+              <div className="cab-dock" ref={dockRef}>
+                {arcadeGames.map((g) => (
+                  <a href={g.play} target="_blank" rel="noopener noreferrer" className="cab-dock__chip" key={g.name}>
+                    <img src={g.image} alt={g.name} className="cab-dock__img" style={{ border: `2px solid ${g.color}44` }} />
+                    <span className="cab-dock__name">{g.name}</span>
+                    <span className="cab-dock__dot" style={{ backgroundColor: g.color, boxShadow: `0 0 8px ${g.color}` }} />
+                  </a>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* ── 4. PHYSICAL CONTROLS BAR ── */}
-          <div className="cabinet__controls">
-
-            {/* Coin Slot */}
-            <div className="cabinet__ctrl-group">
-              <div
-                className={`cabinet__coin-slot ${isCoinDropping ? "dropping" : ""}`}
-                onClick={addCredits}
-              >
-                <div className="cabinet__coin-emoji">🪙</div>
-                <div className="cabinet__coin-slit">
-                  <div className="cabinet__coin-slit-line" />
-                  <div className="cabinet__coin-slit-line" />
-                </div>
-              </div>
-              <span className="cabinet__ctrl-label">INSERT COIN</span>
-            </div>
-
-            {/* SPIN Dome Button */}
-            <div className="cabinet__ctrl-group">
-              <button
-                className={`cabinet__dome-btn ${spinning ? "cabinet__dome-btn--pressed" : ""}`}
-                onClick={doSpin}
-                disabled={spinning}
-              >
-                SPIN
-              </button>
-              <span className="cabinet__ctrl-label">SPIN</span>
-            </div>
-
-            {/* Lever */}
-            <div className="cabinet__ctrl-group">
-              <div
-                className={`cabinet__lever ${leverPulled ? "cabinet__lever--pulled" : ""}`}
-                onClick={handleLeverPull}
-              >
-                <div className="cabinet__lever-base" />
-                <div className="cabinet__lever-shaft">
-                  <div className="cabinet__lever-ball" />
-                </div>
-              </div>
-              <span className="cabinet__ctrl-label">PULL</span>
-            </div>
-          </div>
-
-          {/* ── 5. RESULT PANEL ── */}
-          <div className="cabinet__result-area">
-            {!selectedGame ? (
-              <div className="cabinet__status" style={{ color: statusColor }}>
-                {statusText}
-              </div>
-            ) : (
-              <div
-                className="cabinet__result-card"
-                style={{
-                  borderColor: `${selectedGame.color}33`,
-                  background: `${selectedGame.color}08`,
-                }}
-              >
-                <img
-                  src={selectedGame.image}
-                  alt={selectedGame.name}
-                  className="cabinet__result-img"
-                />
-                <div className="cabinet__result-info">
-                  <div className="cabinet__result-name">{selectedGame.name}</div>
-                  <div className="cabinet__result-desc">{selectedGame.desc}</div>
-                </div>
-                <a
-                  href={selectedGame.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cabinet__result-play"
-                  style={{
-                    borderColor: `${selectedGame.color}66`,
-                    color: selectedGame.color,
-                  }}
-                >
-                  PLAY →
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* ── 6. ALL GAMES ROW ── */}
-          <div className="cabinet__all-games">
-            <div className="cabinet__all-games-label">ALL GAMES</div>
-            <div className="cabinet__all-games-row">
-              {arcadeGames.map((g) => (
-                <a
-                  href={g.play}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="cabinet__game-chip"
-                  key={g.name}
-                >
-                  <img
-                    src={g.image}
-                    alt={g.name}
-                    className="cabinet__game-chip-img"
-                    style={{ border: `2px solid ${g.color}44` }}
-                  />
-                  <span className="cabinet__game-chip-name">{g.name}</span>
-                  <span
-                    className="cabinet__game-chip-dot"
-                    style={{
-                      backgroundColor: g.color,
-                      boxShadow: `0 0 6px ${g.color}`,
-                    }}
-                  />
-                </a>
-              ))}
-            </div>
           </div>
         </div>
       </div>
