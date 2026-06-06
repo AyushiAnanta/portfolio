@@ -15,11 +15,14 @@ function Model() {
   const targetRotation = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    // GSAP entry animation â€” rises up from below
+    const isMobile = window.innerWidth <= 768;
+    const yTarget = isMobile ? -0.3 : -1.0;
+
+    // GSAP entry animation — rises up from below
     gsap.fromTo(
       groupRef.current.position,
       { y: -4 },
-      { y: -1, duration: 1.6, ease: "power3.out", delay: 0.2 }
+      { y: yTarget, duration: 1.6, ease: "power3.out", delay: 0.2 }
     );
 
     const handleMouseMove = (e) => {
@@ -40,7 +43,9 @@ function Model() {
     // --- Floating ---
     // Sine wave on Y, small amplitude so it's subtle
     const floatY = Math.sin(clock.current * 2) * 0.08;
-    groupRef.current.position.y = -1 + floatY;
+    const isMobile = window.innerWidth <= 768;
+    const yBase = isMobile ? -0.3 : -1.0;
+    groupRef.current.position.y = yBase + floatY;
 
     // --- Mouse tracking (smooth lerp toward target) ---
     // Max rotation: ~12 degrees horizontal, ~6 degrees vertical
@@ -59,9 +64,12 @@ function Model() {
     );
   });
 
+  const isMobile = window.innerWidth <= 768;
+  const modelScale = isMobile ? 1.4 : 1.8;
+
   return (
     <group ref={groupRef} position={[0, -1, 0]}>
-      <primitive object={scene} scale={1.8} />
+      <primitive object={scene} scale={modelScale} />
     </group>
   );
 }

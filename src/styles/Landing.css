@@ -46,12 +46,59 @@
 .landing__name {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 700;
+  line-height: 1.25;
+  opacity: 0; /* GSAP entry */
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.landing__name-letter {
+  position: relative;
+  display: inline-block;
+  padding: 0.18em 0.04em; /* vertical padding to prevent matra cutoff */
+  margin: -0.18em -0.04em;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), color 0.3s;
+  cursor: pointer;
+  z-index: 1;
+
+  /* Normal text gradient */
   background: linear-gradient(135deg, var(--text), var(--purple-light), var(--blue-light));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1.1;
-  opacity: 0;
+}
+
+.landing__name-letter::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.35em;
+  height: 1.35em;
+  background: linear-gradient(135deg, var(--text), var(--purple-light), var(--blue-light));
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: -1;
+}
+
+.landing__name-letter.is-hindi {
+  transform: scale(1.15);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: var(--bg);
+  color: var(--bg);
+}
+
+.landing__name-letter.is-hindi::before {
+  transform: translate(-50%, -50%) scale(1);
+  box-shadow: 0 0 15px rgba(167, 139, 202, 0.35);
+}
+
+.landing__name-space {
+  display: inline-block;
+  width: 0.22em; /* spacing width */
 }
 
 .landing__tagline {
@@ -110,9 +157,38 @@
 @media (max-width: 768px) {
   .landing {
     grid-template-columns: 1fr;
-    grid-template-rows: auto 50vh;
-    padding: 6rem 6vw 2rem;
-    gap: 2rem;
+    grid-template-rows: auto 40vh;
+    padding: 5rem 6vw 1.5rem;
+    gap: 1.5rem;
   }
-  .landing__canvas { height: 50vh; }
+  .landing__text {
+    align-items: center;
+    text-align: center;
+  }
+  .landing__cta {
+    justify-content: center;
+  }
+  .landing__canvas {
+    height: 40vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing {
+    grid-template-rows: auto 35vh;
+    padding: 4rem 5vw 1rem;
+    gap: 1.25rem;
+  }
+  .landing__canvas {
+    height: 35vh;
+  }
+  .landing__cta {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
 }

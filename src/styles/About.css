@@ -121,11 +121,116 @@
   margin: 0 auto;
 }
 
+/* Skills section styles */
+.about__skills-container {
+  width: 100%;
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.about__skills-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  position: relative;
+  text-align: left;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about__skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.about__skills-category {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: left;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.about__skills-category:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(192, 132, 252, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.about__skills-category h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--purple-light);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
+}
+
+.about__skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.about__skill-chip {
+  background: rgba(192, 132, 252, 0.07);
+  border: 1px solid rgba(192, 132, 252, 0.15);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  transition: all 0.25s ease;
+}
+
+.about__skill-chip:hover {
+  background: rgba(192, 132, 252, 0.15);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(192, 132, 252, 0.25);
+}
+
 @media (max-width: 768px) {
   .about {
-    padding: 6rem 6vw;
+    padding: 5rem 6vw;
+  }
+  .about__headline h2 {
+    font-size: clamp(1.8rem, 8vw, 3.8rem);
   }
   .about__stats {
-    gap: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    margin: 1.5rem auto 0;
+  }
+  .about__skills-container {
+    margin-top: 3.5rem;
+  }
+  .about__skills-grid {
+    grid-template-columns: 1fr;
+  }
+  .about__skills-category {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    padding: 4rem 5vw;
+  }
+  .about__skills-container {
+    margin-top: 2.5rem;
   }
 }

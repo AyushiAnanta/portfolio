@@ -136,15 +136,39 @@ export const achievements = [
 // Arcade games information
 export const arcadeGames = [
   {
-    name: "Classic Slot Machine",
-    desc: "A custom interactive slot machine built directly in React with neon colors and emojis.",
-    type: "Built-in",
-    icon: "🎰",
+    name: "tictactoe",
+    desc: "Interactive classic tic-tac-toe grid game",
+    tag: "CSS",
+    color: "#bf5fff",
+    github: "https://github.com/AyushiAnanta/tictactoe",
+    play: "https://ayushiananta.github.io/tictactoe/",
+    image: "/arcade/tictactoe.jpg"
   },
   {
-    name: "Arcade Games",
-    desc: "Collection of classic HTML/JS browser games (Tetris, Pong, Snake, and more).",
-    type: "External",
-    icon: "🕹️",
+    name: "BubbleGame",
+    desc: "Catch the matching numbers bubble popping game",
+    tag: "JS",
+    color: "#39ff14",
+    github: "https://github.com/AyushiAnanta/BubbleGame",
+    play: "https://ayushiananta.github.io/BubbleGame/",
+    image: "/arcade/bubblegame.jpg"
+  },
+  {
+    name: "brainypairs",
+    desc: "Memory match card game testing pairs matching speed",
+    tag: "JS",
+    color: "#00f0ff",
+    github: "https://github.com/AyushiAnanta/brainypairs",
+    play: "https://ayushiananta.github.io/brainypairs/",
+    image: "/arcade/brainypairs.jpg"
+  },
+  {
+    name: "hangman",
+    desc: "Retro hangman word guessing challenge",
+    tag: "JS",
+    color: "#ffdd00",
+    github: "https://github.com/AyushiAnanta/hangman",
+    play: "https://ayushiananta.github.io/hangman/",
+    image: "/arcade/hangman.png"
   }
 ];

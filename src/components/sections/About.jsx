@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { about, skills } from "../../data/content";
 import "../../styles/About.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -20,6 +21,7 @@ export default function About() {
   const line3Ref = useRef();
   const bioRef = useRef();
   const statsRef = useRef();
+  const skillsRef = useRef();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -60,6 +62,12 @@ export default function About() {
         { opacity: 0, y: 40 },
         { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
         "-=0.3"
+      )
+      .fromTo(
+        skillsRef.current.children,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
+        "-=0.3"
       );
     }, sectionRef);
 
@@ -88,11 +96,7 @@ export default function About() {
 
         {/* Bio paragraph */}
         <p className="about__bio" ref={bioRef}>
-          CS undergrad at NIIT University (CGPA 9.93) obsessed with building
-          at the intersection of web and AI. From multilingual grievance
-          platforms to LLM-powered detective games — I like my projects to
-          actually do something. National finalist at CyberForHer (EY &amp; DSCI),
-          selected from 700+ applicants.
+          {about.bio}
         </p>
 
         {/* Stats row */}
@@ -103,6 +107,25 @@ export default function About() {
               <span className="about__stat-label">{s.label}</span>
             </div>
           ))}
+        </div>
+
+        {/* Skills grid */}
+        <div className="about__skills-container">
+          <h3 className="about__skills-title">Core Skills</h3>
+          <div className="about__skills-grid" ref={skillsRef}>
+            {Object.entries(skills).map(([category, items]) => (
+              <div className="about__skills-category" key={category}>
+                <h4>{category}</h4>
+                <div className="about__skills-list">
+                  {items.map((skill) => (
+                    <span className="about__skill-chip" key={skill}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
       </div>

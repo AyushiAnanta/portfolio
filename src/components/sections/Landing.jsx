@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CharacterScene from "../Character/CharacterScene";
@@ -6,6 +6,23 @@ import { hero } from "../../data/content";
 import "../../styles/Landing.css";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const engName = ["A", "y", "u", "s", "h", "i", " ", "A", "n", "a", "n", "t", "a"];
+const mappingHin = ["आ", "यु", "यु", "षी", "षी", "षी ", " ", "अ", "न", "अ", "न", "ता", " ता"];
+
+function Letter({ eng, hin }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <span
+      className={`landing__name-letter ${isHovered ? "is-hindi" : ""}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered ? hin : eng}
+    </span>
+  );
+}
 
 export default function Landing({ heroRef }) {
   const contentRef = useRef();
@@ -67,11 +84,24 @@ export default function Landing({ heroRef }) {
   }, []);
 
   return (
-    <section className="landing" ref={heroRef}>
+    <section className="landing" ref={heroRef} id="home">
       {/* Text content */}
       <div className="landing__text" ref={contentRef}>
         <p className="landing__greeting" ref={greetRef}>{hero.greeting}</p>
-        <h1 className="landing__name" ref={nameRef}>{hero.name}</h1>
+        <h1 className="landing__name" ref={nameRef}>
+          {engName.map((char, index) => {
+            if (char === " ") {
+              return <span key={index} className="landing__name-space">&nbsp;</span>;
+            }
+            return (
+              <Letter
+                key={index}
+                eng={char}
+                hin={mappingHin[index]}
+              />
+            );
+          })}
+        </h1>
         <h2 className="landing__tagline" ref={taglineRef}>{hero.tagline}</h2>
         <p className="landing__sub" ref={subRef}>{hero.sub}</p>
         <div className="landing__cta" ref={ctaRef}>
