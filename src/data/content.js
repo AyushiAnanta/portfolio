@@ -3,6 +3,7 @@ export const contact = {
   email: "theayushiananta@gmail.com",
   linkedin: "https://linkedin.com/in/ayushi-ananta",
   github: "https://github.com/AyushiAnanta",
+  resume: "https://drive.google.com/file/d/1hVeJ5WhZZ_t21krzsaiQT3oGbOWaJTrw/view?usp=sharing",
 };
 
 export const hero = {

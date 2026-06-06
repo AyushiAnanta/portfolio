@@ -1,0 +1,47 @@
+.global-canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 101; /* Above navbar background but below hover items */
+  transition: opacity 0.4s ease;
+}
+
+/* Chromatic aberration and hue-shift glitch when docking into the navbar */
+.global-canvas-container.is-glitching {
+  animation: canvas-glitch-action 0.4s ease-out;
+}
+
+@keyframes canvas-glitch-action {
+  0%, 100% {
+    filter: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+  15% {
+    filter: hue-rotate(90deg) saturate(2.5) contrast(1.5);
+    opacity: 0.75;
+    transform: translate(3px, -2px) skewX(2deg);
+  }
+  30% {
+    filter: invert(0.15) brightness(1.2) sepia(0.8);
+    opacity: 0.9;
+    transform: translate(-3px, 2px) scale(0.98);
+  }
+  45% {
+    filter: contrast(2.2) brightness(1.4);
+    opacity: 0.78;
+    transform: translate(2px, 1px) skewX(-2deg);
+  }
+  65% {
+    filter: saturate(3.5) hue-rotate(-45deg);
+    opacity: 0.95;
+    transform: translate(-1px, -1px);
+  }
+  80% {
+    filter: brightness(1.6) contrast(1.2);
+    opacity: 0.88;
+  }
+}

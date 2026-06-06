@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import CharacterScene from "../Character/CharacterScene";
-import { hero } from "../../data/content";
+import { hero, contact } from "../../data/content";
+import { FaLinkedinIn, FaGithub, FaRegFileAlt } from "react-icons/fa";
 import "../../styles/Landing.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -34,6 +34,7 @@ export default function Landing({ heroRef }) {
   const taglineRef = useRef();
   const subRef = useRef();
   const ctaRef = useRef();
+  const socialsRef = useRef();
 
   useEffect(() => {
     // Entry stagger
@@ -48,7 +49,9 @@ export default function Landing({ heroRef }) {
       .fromTo(subRef.current,
         { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2")
       .fromTo(ctaRef.current,
-        { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.1");
+        { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.1")
+      .fromTo(socialsRef.current,
+        { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
 
     // --- Zoom-out scroll effect ---
     const ctx = gsap.context(() => {
@@ -108,11 +111,50 @@ export default function Landing({ heroRef }) {
           <a href="#about" className="btn btn--primary">See my work</a>
           <a href="#contact" className="btn btn--ghost">Get in touch</a>
         </div>
+
+        {/* Links Row below CTA as requested */}
+        <div className="landing__socials" ref={socialsRef}>
+          <div className="landing__socials-divider" />
+          <a
+            href={contact.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing__socials-link"
+            aria-label="LinkedIn"
+          >
+            <FaLinkedinIn />
+          </a>
+          
+          <div className="landing__socials-divider" />
+          
+          <a
+            href={contact.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing__socials-link"
+            aria-label="GitHub"
+          >
+            <FaGithub />
+          </a>
+          
+          <div className="landing__socials-divider" />
+          
+          <a
+            href={contact.resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="landing__socials-link"
+            aria-label="Resume Document"
+          >
+            <FaRegFileAlt />
+          </a>
+          <div className="landing__socials-divider" />
+        </div>
       </div>
 
-      {/* 3D model */}
+      {/* 3D model anchor */}
       <div className="landing__canvas" ref={canvasRef}>
-        <CharacterScene />
+        <div id="hero-avatar-anchor" className="landing__avatar-anchor" />
       </div>
 
       

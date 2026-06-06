@@ -12,6 +12,7 @@ export default function Navbar() {
     { label: "Projects", href: "#projects", id: "projects" },
     { label: "Arcade", href: "#arcade", id: "arcade" },
     { label: "Timeline", href: "#timeline", id: "timeline" },
+    { label: "Contact", href: "#contact", id: "contact" },
   ];
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function Navbar() {
       setScrolled(window.scrollY > 20);
 
       // Section tracker
-      const sections = ["home", "about", "projects", "arcade", "timeline"];
+      const sections = ["home", "about", "projects", "arcade", "timeline", "contact"];
       const scrollPosition = window.scrollY + 120; // offset for nav header height
 
       for (const sectionId of sections) {
@@ -30,6 +31,7 @@ export default function Navbar() {
           const height = el.offsetHeight;
           if (scrollPosition >= top && scrollPosition < top + height) {
             setActiveSection(sectionId);
+            window.dispatchEvent(new CustomEvent("section-change", { detail: sectionId }));
             break;
           }
         }
@@ -61,12 +63,19 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
+  const handleLogoMouseEnter = () => {
+    window.dispatchEvent(new CustomEvent("avatar-spin"));
+  };
+
   return (
     <header className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
       <div className="navbar__inner">
-        <a href="#home" className="navbar__logo" onClick={(e) => handleLinkClick(e, "#home")}>
-          Ayushi<span className="navbar__logo-dot">.</span>
-        </a>
+        <div className="navbar__logo-box" onMouseEnter={handleLogoMouseEnter}>
+          <div id="navbar-avatar-anchor" className="navbar__avatar-anchor" />
+          <a href="#home" className="navbar__logo" onClick={(e) => handleLinkClick(e, "#home")}>
+            Ayushi<span className="navbar__logo-dot">.</span>
+          </a>
+        </div>
 
         {/* Desktop Links */}
         <nav className="navbar__nav">

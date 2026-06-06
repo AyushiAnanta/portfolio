@@ -1,0 +1,177 @@
+.contact-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 8vw;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background subtle glow */
+.contact-section::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.06) 0%, transparent 70%);
+  bottom: -200px; left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.contact-section__inner {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.contact-section__tag {
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purple-light);
+  margin-bottom: 0.5rem;
+}
+
+.contact-card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 4rem 3rem;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.2rem;
+  position: relative;
+}
+
+.contact-card__title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--text), var(--purple-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.contact-card__sub {
+  font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+  color: var(--text-muted);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.contact-info {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.contact-info__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.contact-info__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--purple-light);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(167, 139, 202, 0.15);
+}
+
+.contact-info__icon {
+  color: var(--purple-light);
+  font-size: 1.2rem;
+}
+
+/* Social Row with Vertical Dividers matching the screenshot style */
+.contact-socials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.contact-socials__divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.contact-socials__link {
+  font-size: 1.45rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-decoration: none;
+}
+
+.contact-socials__link:hover {
+  transform: scale(1.15) translateY(-3px);
+  color: var(--text);
+}
+
+/* Brand-specific hover colors & glows */
+.contact-socials__link[aria-label="LinkedIn"]:hover {
+  color: #0a66c2;
+  text-shadow: 0 0 12px rgba(10, 102, 194, 0.4);
+}
+
+.contact-socials__link[aria-label="GitHub"]:hover {
+  color: #ffffff;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+.contact-socials__link[aria-label="Resume Document"]:hover {
+  color: var(--blue-light);
+  filter: drop-shadow(0 0 8px rgba(111, 163, 239, 0.5));
+}
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 5rem 6vw;
+    min-height: auto;
+  }
+  .contact-card {
+    padding: 3rem 1.5rem;
+    gap: 1.8rem;
+  }
+  .contact-info {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 1rem;
+  }
+  .contact-info__item {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+}
