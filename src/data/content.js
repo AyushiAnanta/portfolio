@@ -7,51 +7,51 @@ export const contact = {
 };
 
 export const hero = {
-  greeting: "Hey, I'm",
+  greeting: "hey, it's",
   name: "Ayushi Ananta",
   hindiName: "आयुषी अनंता",
-  tagline: "I build things that think.",
-  sub: "Full Stack Developer & AI Builder",
+  tagline: "I make software that actually does something.",
+  sub: "Full Stack Dev · AI Builder · Probably debugging right now",
 };
 
 export const about = {
-  bio: "I'm a CS undergrad at NIIT University (CGPA 9.93) obsessed with building products at the intersection of web and AI. From multilingual grievance platforms to LLM-powered detective games — I like my projects to actually do something. National finalist at CyberForHer (EY & DSCI), selected from 700+ applicants.",
+  bio: "CS undergrad at NIIT University (9.93 CGPA). I build at the intersection of AI and full-stack, from multilingual grievance platforms to LLM-powered detective games. Picked as a national finalist at CyberForHer out of 700+ applicants. I like my projects to actually do something.",
 };
 
 export const projects = [
   {
     name: "Sahayak",
     subtitle: "Multimodal Civic Grievance Platform",
-    desc: "Architected an end-to-end multimodal AI processing pipeline ingesting text, voice, image, and PDF inputs, outputting structured and automatically routed grievance records.",
+    desc: "Civic grievance platform that accepts text, voice, image, and PDF inputs and auto-routes structured complaints — built for multilingual accessibility across 5 Indian languages.",
     bullets: [
-      "Architected an end-to-end multimodal AI processing pipeline ingesting text, voice, image, and PDF inputs and outputting structured, routable grievance records — validated across 50+ test cases spanning all input modalities.",
-      "Integrated Tesseract OCR with a Groq-hosted LLaMA model to classify grievances by type, urgency, and language across 5 Indian languages, enabling access for users across language barriers.",
-      "Designed FastAPI backend to handle concurrent multimodal requests, structuring the system for production-readiness ahead of planned deployment."
+      "Multimodal AI pipeline (text, voice, image, PDF) → structured, auto-routed grievance records.",
+      "Tesseract OCR + LLaMA via Groq for grievance classification by type, urgency, and language across 5 Indian languages.",
+      "FastAPI backend handling concurrent multimodal requests."
     ],
     tags: ["FastAPI", "MERN", "Groq API", "Tesseract OCR", "LLaMA"],
-    github: "https://github.com/AyushiAnanta/Sahayak", // placeholder or actual
+    github: "https://github.com/AyushiAnanta/Sahayak",
     demo: "",
   },
   {
     name: "AI Imposter",
     subtitle: "LLM-Powered Detective Game",
-    desc: "A browser-based interrogative detective game where players question AI-driven suspects using persistent, session-level memory state.",
+    desc: "Browser-based detective game where you interrogate AI suspects — each with persistent memory and a unique backstory generated fresh every session.",
     bullets: [
-      "Reduced AI response latency by ~92% — from 60s to ~5s — by migrating from synchronous API calls to a FastAPI backend, making real-time gameplay viable for the first time.",
-      "Engineered per-session story generation using Gemini API with persistent chat history, ensuring character consistency and narrative coherence across multi-round interrogations without drift.",
-      "Deployed a browser-based detective game on Vercel with dynamic AI-driven characters, handling edge-case player inputs gracefully within an immersive game loop."
+      "Cut AI response time from 60s → ~5s by switching to async FastAPI calls.",
+      "Per-session story + chat history via Gemini API keeps characters consistent across multi-round interrogations.",
+      "Deployed on Vercel with graceful handling of edge-case player inputs."
     ],
     tags: ["MERN", "Gemini API", "FastAPI", "Vercel"],
     github: "https://github.com/AyushiAnanta/AI-Imposter",
-    demo: "https://ai-imposter-demo.vercel.app", // placeholder/hypothetical
+    demo: "https://ai-imposter-demo.vercel.app",
   },
   {
     name: "oopsTube",
     subtitle: "Full-Stack Video Streaming Platform",
-    desc: "A robust media-sharing and streaming application with custom video adapters, JWT-based sessions, and secure image and video content management.",
+    desc: "YouTube-like platform with video uploads up to 20 min, adaptive playback, JWT auth, and real-time interactions.",
     bullets: [
-      "Architected a RESTful Node.js/Express backend with 25+ fully tested and documented endpoints, separated across controllers, routes, and middleware layers for maintainability at scale.",
-      "Built full-stack video streaming with Cloudinary-powered uploads supporting 15–20 min videos, adaptive playback, JWT authentication, and real-time user interactions."
+      "25+ REST endpoints across controllers, routes, and middleware.",
+      "Cloudinary-powered uploads with adaptive streaming and JWT-based sessions."
     ],
     tags: ["MERN", "JWT", "Cloudinary", "Express.js", "Node.js"],
     github: "https://github.com/AyushiAnanta/oopsTube",

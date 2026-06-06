@@ -108,8 +108,8 @@ export default function Landing({ heroRef }) {
         <h2 className="landing__tagline" ref={taglineRef}>{hero.tagline}</h2>
         <p className="landing__sub" ref={subRef}>{hero.sub}</p>
         <div className="landing__cta" ref={ctaRef}>
-          <a href="#about" className="btn btn--primary">See my work</a>
-          <a href="#contact" className="btn btn--ghost">Get in touch</a>
+          <a href="#projects" className="btn btn--primary">See what I've built</a>
+          <a href="#contact" className="btn btn--ghost">Reach out</a>
         </div>
 
         {/* Links Row below CTA as requested */}

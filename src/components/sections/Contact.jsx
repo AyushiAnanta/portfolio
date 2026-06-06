@@ -37,12 +37,12 @@ export default function Contact() {
   return (
     <section className="contact-section" ref={sectionRef} id="contact">
       <div className="contact-section__inner">
-        <p className="contact-section__tag">— connect</p>
+        <p className="contact-section__tag">— say hi</p>
         
         <div className="contact-card" ref={cardRef}>
-          <h2 className="contact-card__title">Contact Us</h2>
+          <h2 className="contact-card__title">let's talk.</h2>
           <p className="contact-card__sub">
-            Let's build something amazing together! Feel free to reach out.
+            Seriously though — whether it's a collab, an internship, or just a interesting conversation, I'm usually one message away.
           </p>
 
           <div className="contact-info">

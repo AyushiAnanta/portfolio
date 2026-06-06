@@ -65,8 +65,9 @@ function Model() {
     const trigger = ScrollTrigger.create({
       trigger: "#home",
       start: "top top",
-      end: "bottom top",
+      end: () => "+=" + window.innerHeight,
       scrub: true,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         scrollProgress.current = self.progress;
       },
@@ -161,7 +162,7 @@ function Model() {
       groupRef.current.position.copy(interpolatedPos);
 
       const isMobileSize = window.innerWidth <= 768;
-      const heroScale = isMobileSize ? 0.9 : 1.8;
+      const heroScale = isMobileSize ? 0.65 : 1.8;
       const navScale = isMobileSize ? 0.06 : 0.14;
 
       // Make minimization faster at the start using an ease-out cubic curve

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { arcadeGames } from "../../data/content";
+import { FaGithub, FaPlay } from "react-icons/fa";
 import "../../styles/ArcadeZone.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -28,6 +29,7 @@ export default function ArcadeZone() {
   const controlsRef = useRef();
   const reelsRef    = useRef([]);
   const reelsOffset = useRef([0, 0, 0]);
+  const gamesGridRef = useRef();
 
   const [credits,       setCredits]       = useState(10);
   const [spinning,      setSpinning]      = useState(false);
@@ -70,6 +72,23 @@ export default function ArcadeZone() {
         { opacity: 0, y: 15 },
         { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
         "-=0.65"
+      );
+
+      gsap.fromTo(
+        gamesGridRef.current.children,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          stagger: 0.15,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: gamesGridRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
       );
     }, sectionRef);
 
@@ -192,11 +211,11 @@ export default function ArcadeZone() {
   return (
     <section className="arcade" ref={sectionRef} id="arcade">
       <div className="arcade__inner">
-        <p className="arcade__tag">— interactive zone</p>
-        <h2 className="arcade__title" ref={titleRef}>Arcade Zone</h2>
+        <p className="arcade__tag">— the origin story</p>
+        <h2 className="arcade__title" ref={titleRef}>Game Zone</h2>
         <p className="arcade__intro" ref={introRef}>
-          A collection of early builds from the start of my coding journey — these simple projects
-          laid the foundation for my logic building and ignited my passion for software engineering.
+          These were how I taught myself to code — messy, dumb, and I loved every second.
+          Hangman to Sahayak. That's the arc.
         </p>
 
         {/* ═══ 3D CABINET SCENE ═══ */}
@@ -377,6 +396,55 @@ export default function ArcadeZone() {
               </div>
 
           </div>
+        </div>
+
+        {/* ── ALL GAMES GRID ── */}
+        <div className="arcade__games-grid" ref={gamesGridRef}>
+          {arcadeGames.map((game) => (
+            <div
+              className="arcade-card"
+              key={game.name}
+              style={{ "--game-color": game.color }}
+            >
+              <div className="arcade-card__img-container">
+                <img src={game.image} alt={game.name} className="arcade-card__img" />
+                <div className="arcade-card__overlay">
+                  <a
+                    href={game.play}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="arcade-card__play-btn"
+                    aria-label={`Play ${game.name}`}
+                  >
+                    <FaPlay />
+                  </a>
+                </div>
+              </div>
+              <div className="arcade-card__content">
+                <h3 className="arcade-card__name">{game.name}</h3>
+                <p className="arcade-card__desc">{game.desc}</p>
+                <div className="arcade-card__actions">
+                  <a
+                    href={game.play}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="arcade-card__btn arcade-card__btn--primary"
+                  >
+                    Play Now
+                  </a>
+                  <a
+                    href={game.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="arcade-card__btn arcade-card__btn--icon"
+                    aria-label={`${game.name} GitHub Repository`}
+                  >
+                    <FaGithub />
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

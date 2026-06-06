@@ -58,12 +58,6 @@ export default function About() {
         "-=0.3"
       )
       .fromTo(
-        statsRef.current.children,
-        { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
-        "-=0.3"
-      )
-      .fromTo(
         skillsRef.current.children,
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
@@ -79,18 +73,16 @@ export default function About() {
       <div className="about__inner">
 
         {/* Small tag label */}
-        <p className="about__tag" ref={tagRef}>— about me</p>
+        <p className="about__tag" ref={tagRef}>— the person behind the code</p>
 
         {/* Big chunky headline — 3 lines */}
         <div className="about__headline">
-          <h2 ref={line1Ref}>I'm a builder.</h2>
+          <h2 ref={line1Ref}>obsessed with coffee & code.</h2>
           <h2 ref={line2Ref}>
-            I make things that{" "}
-            <span className="about__highlight">think</span>,
+            if your office offers both,
           </h2>
           <h2 ref={line3Ref}>
-            things that{" "}
-            <span className="about__highlight--blue">ship</span>.
+            <span className="about__highlight">hire me</span> please ;)
           </h2>
         </div>
 
@@ -99,15 +91,7 @@ export default function About() {
           {about.bio}
         </p>
 
-        {/* Stats row */}
-        <div className="about__stats" ref={statsRef}>
-          {stats.map((s) => (
-            <div className="about__stat" key={s.label}>
-              <span className="about__stat-value">{s.value}</span>
-              <span className="about__stat-label">{s.label}</span>
-            </div>
-          ))}
-        </div>
+        
 
         {/* Skills grid */}
         <div className="about__skills-container">

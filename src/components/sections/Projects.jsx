@@ -40,7 +40,7 @@ export default function Projects() {
   return (
     <section className="projects" ref={sectionRef} id="projects">
       <div className="projects__inner">
-        <p className="projects__tag">— my work</p>
+        <p className="projects__tag">— things I've actually shipped</p>
         <h2 className="projects__title" ref={titleRef}>Featured Projects</h2>
 
         <div className="projects__grid" ref={gridRef}>
