@@ -1,7 +1,3 @@
-/* ═══════════════════════════════════════════════════════════
-   ARCADE ZONE — 3D CSS Slot Machine Cabinet
-   ═══════════════════════════════════════════════════════════ */
-
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 /* ── Section ── */
@@ -65,7 +61,6 @@
   position: relative;
 }
 
-/* Background bloom behind cabinet */
 .cab-scene::before {
   content: '';
   position: absolute;
@@ -87,31 +82,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Subtle 3D tilt for depth feel */
   transform: rotateX(2deg);
   transform-style: preserve-3d;
 }
 
 /* ═══════════════════════════════════════════
-   MARQUEE ARCH
+   MARQUEE ARCH — FIX 1: taller, visible LEDs, marquee strip
    ═══════════════════════════════════════════ */
 
 .cab-arch {
   width: 106%;
-  padding: 1.3rem 2rem 1rem;
+  /* FIX 1a: more vertical height */
+  padding: 1.6rem 2rem 1.2rem;
   position: relative;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 10px;
   z-index: 4;
-  /* Arched shape */
   border-radius: 80px 80px 0 0;
   background: linear-gradient(180deg, #141432 0%, #0f0f2e 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: none;
-  /* 3D backward tilt */
   transform: translateZ(6px);
-  /* Convex depth shadows */
   box-shadow:
     0 -6px 16px rgba(192, 132, 252, 0.07),
     inset 0 2px 0 rgba(255, 255, 255, 0.12),
@@ -143,26 +137,46 @@
   z-index: 2;
 }
 
-/* Bulb LEDs — two on each side, blink async */
-.cab-arch__led {
-  position: absolute;
+/* FIX 1b: marquee LED strip along bottom of arch */
+.cab-arch__strip {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.cab-arch__strip-led {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--blue-light);
 }
 
-.cab-arch__led--l  { left: 20%;  top: 50%; transform: translateY(-50%); animation: led-a 1.4s infinite ease-in-out; }
-.cab-arch__led--r  { right: 20%; top: 50%; transform: translateY(-50%); animation: led-b 1.4s infinite ease-in-out; }
-.cab-arch__led--l2 { left: 14%;  top: 50%; transform: translateY(-50%); animation: led-b 1.4s infinite ease-in-out; }
-.cab-arch__led--r2 { right: 14%; top: 50%; transform: translateY(-50%); animation: led-a 1.4s infinite ease-in-out; }
+.cab-arch__strip-led:nth-child(odd)  { animation: led-a 1.2s infinite ease-in-out; }
+.cab-arch__strip-led:nth-child(even) { animation: led-b 1.2s infinite ease-in-out; }
+
+/* FIX 1c: corner LEDs — bigger (8px) with visible glow */
+.cab-arch__led {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue-light);
+}
+
+.cab-arch__led--l  { left: 18%;  top: 42%; transform: translateY(-50%); animation: led-a 1.4s infinite ease-in-out; }
+.cab-arch__led--r  { right: 18%; top: 42%; transform: translateY(-50%); animation: led-b 1.4s infinite ease-in-out; }
+.cab-arch__led--l2 { left: 11%;  top: 42%; transform: translateY(-50%); animation: led-b 1.4s infinite ease-in-out; }
+.cab-arch__led--r2 { right: 11%; top: 42%; transform: translateY(-50%); animation: led-a 1.4s infinite ease-in-out; }
 
 @keyframes led-a {
   0%, 100% { opacity: 0.2; box-shadow: 0 0 2px var(--blue-light); }
-  50%      { opacity: 1;   box-shadow: 0 0 8px var(--blue-light), 0 0 16px var(--blue-light); }
+  50%      { opacity: 1;   box-shadow: 0 0 10px var(--blue-light), 0 0 20px var(--blue-light); }
 }
 @keyframes led-b {
-  0%, 100% { opacity: 1;   box-shadow: 0 0 8px var(--blue-light), 0 0 16px var(--blue-light); }
+  0%, 100% { opacity: 1;   box-shadow: 0 0 10px var(--blue-light), 0 0 20px var(--blue-light); }
   50%      { opacity: 0.2; box-shadow: 0 0 2px var(--blue-light); }
 }
 
@@ -177,14 +191,12 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-top: none;
   z-index: 2;
-  /* Top-light + massive bottom shadow for depth */
   box-shadow:
     inset 0 2px 0 rgba(255, 255, 255, 0.1),
     0 40px 80px rgba(0, 0, 0, 0.7),
     0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Simulated 3D side faces via pseudo-elements (no preserve-3d clipping) */
 .cab-body::before,
 .cab-body::after {
   content: '';
@@ -196,32 +208,20 @@
   z-index: 10;
 }
 
-/* Left side face — specular highlight strip */
 .cab-body::before {
   left: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.03) 30%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 30%, transparent 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* Right side face — darker shadow strip */
 .cab-body::after {
   right: 0;
-  background: linear-gradient(
-    270deg,
-    rgba(0, 0, 0, 0.25) 0%,
-    rgba(0, 0, 0, 0.08) 40%,
-    transparent 100%
-  );
+  background: linear-gradient(270deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 40%, transparent 100%);
   border-left: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 /* ═══════════════════════════════════════════
-   SCREEN BEZEL (inset tube)
+   SCREEN BEZEL
    ═══════════════════════════════════════════ */
 
 .cab-screen {
@@ -230,7 +230,6 @@
   border-radius: 10px;
   position: relative;
   overflow: hidden;
-  /* Deep inset tube effect */
   box-shadow:
     inset 0 0 30px rgba(0, 0, 0, 0.8),
     inset 0 3px 8px rgba(0, 0, 0, 0.6),
@@ -238,16 +237,13 @@
   border: 2px solid rgba(255, 255, 255, 0.04);
 }
 
-/* CRT scanlines + corner vignette */
 .cab-screen__crt {
   position: absolute;
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    transparent 0px,
-    transparent 2px,
-    rgba(0, 0, 0, 0.15) 2px,
-    rgba(0, 0, 0, 0.15) 4px
+    transparent 0px, transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px, rgba(0, 0, 0, 0.15) 4px
   );
   z-index: 10;
   pointer-events: none;
@@ -255,7 +251,6 @@
   box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
 }
 
-/* Screen header */
 .cab-screen__header {
   display: flex;
   justify-content: space-between;
@@ -298,7 +293,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   REELS
+   REELS — FIX 2: taller columns, bigger cards + icons
    ═══════════════════════════════════════════ */
 
 .cab-reels {
@@ -310,7 +305,6 @@
   z-index: 1;
 }
 
-/* Payline arrows ◀ ▶ */
 .cab-reels__arrow {
   font-size: 0.75rem;
   color: var(--accent);
@@ -335,13 +329,13 @@
   justify-content: center;
 }
 
-/* Neon highlight frame on center row */
 .cab-reels__highlight {
   position: absolute;
   top: 50%;
   left: 0;
   right: 0;
-  height: 110px;
+  /* FIX 2a: match new card height */
+  height: 126px;
   border: 1.5px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
   transform: translateY(-50%);
@@ -350,19 +344,19 @@
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Reel column */
+/* FIX 2b: taller reel columns */
 .cab-reels__col {
-  width: 130px;
-  height: 280px;
+  flex: 1;
+  /* FIX: equal thirds, not fixed 130px */
+  min-width: 0;
+  height: 300px;
   overflow: hidden;
   position: relative;
-  /* Thin dividers between columns */
   border-right: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .cab-reels__col:last-child { border-right: none; }
 
-/* Vertical fade (top + bottom into screen bg) */
 .cab-reels__fade {
   position: absolute;
   inset: 0;
@@ -384,33 +378,33 @@
   will-change: transform;
 }
 
-/* Individual reel card — glass */
+/* FIX 2c: taller cards + bigger icons */
 .cab-reels__card {
-  height: 110px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  margin: 3px 8px;
+  margin: 3px 6px;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* Soft glow ring behind icon */
 .cab-reels__glow {
   position: absolute;
-  width: 54px;
-  height: 54px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   pointer-events: none;
   opacity: 0.4;
 }
 
+/* FIX 2d: bigger icon */
 .cab-reels__icon {
-  width: 50px;
-  height: 50px;
+  width: 64px;
+  height: 64px;
   border-radius: 10px;
   object-fit: cover;
   position: relative;
@@ -418,12 +412,13 @@
 }
 
 /* ═══════════════════════════════════════════
-   RESULT PANEL (between screen and controls)
+   RESULT PANEL — FIX 3: proper min-height, stable layout
    ═══════════════════════════════════════════ */
 
 .cab-result {
+  /* FIX 3: always reserve space, no layout jump */
   padding: 10px 16px 10px;
-  min-height: 60px;
+  min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -448,11 +443,11 @@
 }
 
 .cab-result__img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
 
@@ -499,7 +494,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   CONTROLS DECK (raised + tilted surface)
+   CONTROLS DECK — FIX 4: balanced sizing
    ═══════════════════════════════════════════ */
 
 .cab-controls {
@@ -511,13 +506,11 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
   z-index: 3;
-  /* Raised surface bevel */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     inset 0 -2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Tilted surface overlay hint — CSS gradient that simulates perspective */
 .cab-controls::before {
   content: '';
   position: absolute;
@@ -541,11 +534,11 @@
   text-transform: uppercase;
 }
 
-/* ── COIN SLOT ── */
+/* ── COIN SLOT — FIX 4a: 52px ── */
 .cab-coin {
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.025);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -571,11 +564,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 .cab-coin__line {
-  width: 24px;
+  width: 26px;
   height: 2.5px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
@@ -597,15 +590,15 @@
 }
 
 @keyframes coin-fall {
-  0%   { transform: translateY(0) scale(1);    opacity: 0; }
-  15%  {                                        opacity: 1; }
+  0%   { transform: translateY(0) scale(1);      opacity: 0; }
+  15%  {                                          opacity: 1; }
   100% { transform: translateY(34px) scale(0.4); opacity: 0; }
 }
 
-/* ── SPIN DOME BUTTON (purple, primary CTA) ── */
+/* ── SPIN DOME BUTTON — FIX 4b: 72px ── */
 .cab-spin {
-  width: 68px;
-  height: 68px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, var(--accent), var(--purple) 60%, #4c287a);
   border: 3px solid rgba(255, 255, 255, 0.15);
@@ -619,7 +612,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  /* Dome convexity + outer ring glow */
   box-shadow:
     inset 0 -5px 10px rgba(0, 0, 0, 0.35),
     inset 0 2px 4px rgba(255, 255, 255, 0.1),
@@ -653,16 +645,16 @@
 
 @keyframes spin-glow-burst {
   0%   { box-shadow: inset 0 -2px 5px rgba(0,0,0,0.35), 0 1px 0 #3d1f66, 0 0 60px rgba(192,132,252,0.9); }
-  100% { box-shadow: inset 0 -2px 5px rgba(0,0,0,0.35), 0 1px 0 #3d1f66, 0 0 40px rgba(192,132,252,0.75), 0 2px 10px rgba(192,132,252,0.4); }
+  100% { box-shadow: inset 0 -2px 5px rgba(0,0,0,0.35), 0 1px 0 #3d1f66, 0 0 40px rgba(192,132,252,0.75); }
 }
 
 .cab-spin:disabled { cursor: not-allowed; opacity: 0.6; }
 
-/* ── LEVER ── */
+/* ── LEVER — FIX 4c: taller shaft (52px) ── */
 .cab-lever {
   position: relative;
   width: 46px;
-  height: 56px;
+  height: 64px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -684,8 +676,8 @@
 
 .cab-lever__shaft {
   width: 5px;
-  height: 44px;
-  /* Shaft with specular shine */
+  /* FIX 4c: taller shaft */
+  height: 52px;
   background: linear-gradient(90deg, #1a1a3a 0%, #555 35%, rgba(255,255,255,0.2) 50%, #555 65%, #1a1a3a 100%);
   border-radius: 3px;
   position: relative;
@@ -712,7 +704,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   BASE PEDESTAL (wider, grounded)
+   BASE PEDESTAL
    ═══════════════════════════════════════════ */
 
 .cab-base {
@@ -724,7 +716,6 @@
   border-radius: 0 0 18px 18px;
   position: relative;
   z-index: 1;
-  /* Grounded heavy shadow */
   box-shadow:
     0 30px 60px rgba(0, 0, 0, 0.6),
     0 12px 24px rgba(0, 0, 0, 0.4),
@@ -732,26 +723,29 @@
 }
 
 /* ═══════════════════════════════════════════
-   ALL GAMES DOCK (on pedestal)
+   ALL GAMES DOCK — FIX 5: 2×2 compact grid, not full-width
    ═══════════════════════════════════════════ */
 
 .cab-dock {
-  display: flex;
+  /* FIX 5a: 2-column grid, centered, compact */
+  display: grid;
+  grid-template-columns: repeat(2, auto);
   justify-content: center;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .cab-dock__chip {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
+  /* FIX 5b: no stretch, natural pill width */
   padding: 5px 12px 5px 5px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 100px;
   text-decoration: none;
   transition: all 0.25s ease;
+  width: fit-content;
 }
 
 .cab-dock__chip:hover {
@@ -761,9 +755,10 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(192, 132, 252, 0.1);
 }
 
+/* FIX 5c: 36px circle thumbnails with colored border */
 .cab-dock__img {
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -777,9 +772,10 @@
   white-space: nowrap;
 }
 
+/* FIX 5d: bigger dot with glow animation */
 .cab-dock__dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
   animation: dot-glow 2.5s infinite ease-in-out;
@@ -787,7 +783,7 @@
 
 @keyframes dot-glow {
   0%, 100% { opacity: 0.45; transform: scale(0.8); }
-  50%      { opacity: 1;    transform: scale(1.25); }
+  50%      { opacity: 1;    transform: scale(1.3); }
 }
 
 /* ═══════════════════════════════════════════
@@ -804,25 +800,27 @@
 
   .cab-arch {
     width: 104%;
-    padding: 1rem 1.5rem 0.8rem;
+    padding: 1.3rem 1.5rem 1rem;
+    gap: 8px;
   }
 
   .cab-arch__title { font-size: 1.2rem; letter-spacing: 0.12em; }
+  .cab-arch__strip { gap: 8px; }
+  .cab-arch__strip-led { width: 5px; height: 5px; }
 
+  /* FIX 2 mobile: reels fill width equally */
   .cab-reels__col {
-    width: 100px;
-    height: 230px;
+    height: 260px;
   }
 
   .cab-reels__card {
-    height: 90px;
-    margin: 2px 5px;
+    height: 104px;
+    margin: 2px 4px;
   }
 
-  .cab-reels__highlight { height: 90px; }
-
-  .cab-reels__icon { width: 40px; height: 40px; }
-  .cab-reels__glow { width: 46px; height: 46px; }
+  .cab-reels__highlight { height: 108px; }
+  .cab-reels__icon { width: 56px; height: 56px; }
+  .cab-reels__glow { width: 62px; height: 62px; }
 
   .cab-result__card {
     flex-direction: column;
@@ -835,27 +833,35 @@
 
   .cab-controls { padding: 1.2rem 1rem 1.5rem; }
 
-  .cab-spin { width: 56px; height: 56px; font-size: 0.78rem; }
+  /* FIX 4 mobile */
+  .cab-spin  { width: 60px; height: 60px; font-size: 0.78rem; }
+  .cab-coin  { width: 46px; height: 46px; }
+  .cab-lever { height: 58px; }
+  .cab-lever__shaft { height: 46px; }
 
   .cab-base { width: 106%; padding: 0.8rem 1rem 1rem; }
 
-  .cab-dock__chip { padding: 4px 10px 4px 4px; gap: 5px; }
-  .cab-dock__img { width: 36px; height: 36px; }
-  .cab-dock__name { font-size: 0.72rem; }
+  /* FIX 5 mobile: 2-col grid stays */
+  .cab-dock { grid-template-columns: repeat(2, auto); gap: 6px; }
+  .cab-dock__chip { padding: 4px 10px 4px 4px; gap: 6px; }
+  .cab-dock__img  { width: 32px; height: 32px; }
+  .cab-dock__name { font-size: 0.75rem; }
 }
 
 @media (max-width: 480px) {
   .arcade { padding: 4rem 4vw; }
 
-  .cab-reels__col { width: 85px; height: 200px; }
-  .cab-reels__card { height: 76px; margin: 2px 3px; }
-  .cab-reels__highlight { height: 76px; }
-  .cab-reels__icon { width: 34px; height: 34px; border-radius: 8px; }
+  .cab-reels__col   { height: 230px; }
+  .cab-reels__card  { height: 90px; margin: 2px 3px; }
+  .cab-reels__highlight { height: 94px; }
+  .cab-reels__icon  { width: 48px; height: 48px; border-radius: 8px; }
+  .cab-reels__glow  { width: 54px; height: 54px; }
 
-  .cab-spin { width: 50px; height: 50px; font-size: 0.72rem; }
-  .cab-coin { width: 42px; height: 42px; }
+  .cab-spin  { width: 54px; height: 54px; font-size: 0.72rem; }
+  .cab-coin  { width: 42px; height: 42px; }
+  .cab-lever { height: 52px; }
+  .cab-lever__shaft { height: 40px; }
 
-  .cab-dock { flex-direction: column; align-items: stretch; }
-  .cab-dock__chip { justify-content: center; }
-  .cab-dock__img { width: 34px; height: 34px; }
+  .cab-arch__strip { gap: 6px; }
+  .cab-arch__strip-led { width: 4px; height: 4px; }
 }
