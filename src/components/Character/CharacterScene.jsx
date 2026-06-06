@@ -144,7 +144,7 @@ function Model() {
 
     if (heroPos && navPos) {
       const isMobile = window.innerWidth <= 768;
-      const yBase = isMobile ? -0.3 : -1.0;
+      const yBase = isMobile ? -0.1 : -1.0;
       const yStart = heroPos.y + yBase;
       const yEnd = navPos.y;
 
@@ -162,7 +162,7 @@ function Model() {
       groupRef.current.position.copy(interpolatedPos);
 
       const isMobileSize = window.innerWidth <= 768;
-      const heroScale = isMobileSize ? 0.65 : 1.8;
+      const heroScale = isMobileSize ? 0.8 : 1.8;
       const navScale = isMobileSize ? 0.06 : 0.14;
 
       // Make minimization faster at the start using an ease-out cubic curve
