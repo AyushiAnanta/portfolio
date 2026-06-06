@@ -81,18 +81,45 @@
   max-width: 480px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   transform: rotateX(2deg);
-  transform-style: preserve-3d;
+  
+  /* Unified cabinet shell styling */
+  background: linear-gradient(180deg, #141432 0%, #0d0d24 50%, #070716 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 60px 60px 18px 18px;
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.75),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(192, 132, 252, 0.04);
+  overflow: hidden;
 }
 
-/* ═══════════════════════════════════════════
-   MARQUEE ARCH — FIX 1: taller, visible LEDs, marquee strip
-   ═══════════════════════════════════════════ */
+/* 3D lighting shadow/specular stripe overlays running from top to bottom */
+.cab-3d::before,
+.cab-3d::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  pointer-events: none;
+  z-index: 10;
+}
 
+.cab-3d::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 30%, transparent 100%);
+}
+
+.cab-3d::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.08) 40%, transparent 100%);
+}
+
+/* ── MARQUEE ARCH ── */
 .cab-arch {
-  width: 106%;
-  /* FIX 1a: more vertical height */
+  width: 100%;
   padding: 1.6rem 2rem 1.2rem;
   position: relative;
   display: flex;
@@ -101,16 +128,8 @@
   align-items: center;
   gap: 10px;
   z-index: 4;
-  border-radius: 80px 80px 0 0;
-  background: linear-gradient(180deg, #141432 0%, #0f0f2e 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: none;
-  transform: translateZ(6px);
-  box-shadow:
-    0 -6px 16px rgba(192, 132, 252, 0.07),
-    inset 0 2px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.5);
+  background: #0f0f2e;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cab-arch__glow {
@@ -178,46 +197,6 @@
 @keyframes led-b {
   0%, 100% { opacity: 1;   box-shadow: 0 0 10px var(--blue-light), 0 0 20px var(--blue-light); }
   50%      { opacity: 0.2; box-shadow: 0 0 2px var(--blue-light); }
-}
-
-/* ═══════════════════════════════════════════
-   CABINET BODY
-   ═══════════════════════════════════════════ */
-
-.cab-body {
-  width: 100%;
-  position: relative;
-  background: #0f0f2e;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-top: none;
-  z-index: 2;
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.1),
-    0 40px 80px rgba(0, 0, 0, 0.7),
-    0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.cab-body::before,
-.cab-body::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 12px;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.cab-body::before {
-  left: 0;
-  background: linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 30%, transparent 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.cab-body::after {
-  right: 0;
-  background: linear-gradient(270deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 40%, transparent 100%);
-  border-left: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 /* ═══════════════════════════════════════════
@@ -501,22 +480,13 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
+  width: 100%;
   padding: 1.5rem 1.5rem 1.8rem;
-  background: linear-gradient(180deg, #121230 0%, #0d0d24 100%);
+  background: #0f0f2e;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   position: relative;
   z-index: 3;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.cab-controls::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 40%);
-  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .cab-ctrl {
@@ -703,88 +673,12 @@
   transform: rotateX(50deg) scaleY(0.65);
 }
 
-/* ═══════════════════════════════════════════
-   BASE PEDESTAL
-   ═══════════════════════════════════════════ */
 
-.cab-base {
-  width: 112%;
-  padding: 1.2rem 1.5rem 1.4rem;
-  background: linear-gradient(180deg, #121230 0%, #0c0c22 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-top: 2px solid rgba(255, 255, 255, 0.04);
-  border-radius: 0 0 18px 18px;
-  position: relative;
-  z-index: 1;
-  box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.6),
-    0 12px 24px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
 
 /* ═══════════════════════════════════════════
    ALL GAMES DOCK — FIX 5: 2×2 compact grid, not full-width
    ═══════════════════════════════════════════ */
 
-.cab-dock {
-  /* FIX 5a: 2-column grid, centered, compact */
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  justify-content: center;
-  gap: 8px;
-}
-
-.cab-dock__chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  /* FIX 5b: no stretch, natural pill width */
-  padding: 5px 12px 5px 5px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 100px;
-  text-decoration: none;
-  transition: all 0.25s ease;
-  width: fit-content;
-}
-
-.cab-dock__chip:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(192, 132, 252, 0.3);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 12px rgba(192, 132, 252, 0.1);
-}
-
-/* FIX 5c: 36px circle thumbnails with colored border */
-.cab-dock__img {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.cab-dock__name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text);
-  white-space: nowrap;
-}
-
-/* FIX 5d: bigger dot with glow animation */
-.cab-dock__dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: dot-glow 2.5s infinite ease-in-out;
-}
-
-@keyframes dot-glow {
-  0%, 100% { opacity: 0.45; transform: scale(0.8); }
-  50%      { opacity: 1;    transform: scale(1.3); }
-}
 
 /* ═══════════════════════════════════════════
    RESPONSIVE
@@ -796,10 +690,11 @@
   .cab-3d {
     max-width: 100%;
     transform: rotateX(1deg);
+    border-radius: 40px 40px 14px 14px;
   }
 
   .cab-arch {
-    width: 104%;
+    width: 100%;
     padding: 1.3rem 1.5rem 1rem;
     gap: 8px;
   }
@@ -831,21 +726,11 @@
 
   .cab-result__play { width: 100%; text-align: center; }
 
-  .cab-controls { padding: 1.2rem 1rem 1.5rem; }
-
   /* FIX 4 mobile */
   .cab-spin  { width: 60px; height: 60px; font-size: 0.78rem; }
   .cab-coin  { width: 46px; height: 46px; }
   .cab-lever { height: 58px; }
   .cab-lever__shaft { height: 46px; }
-
-  .cab-base { width: 106%; padding: 0.8rem 1rem 1rem; }
-
-  /* FIX 5 mobile: 2-col grid stays */
-  .cab-dock { grid-template-columns: repeat(2, auto); gap: 6px; }
-  .cab-dock__chip { padding: 4px 10px 4px 4px; gap: 6px; }
-  .cab-dock__img  { width: 32px; height: 32px; }
-  .cab-dock__name { font-size: 0.75rem; }
 }
 
 @media (max-width: 480px) {

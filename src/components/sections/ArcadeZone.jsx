@@ -18,7 +18,6 @@ export default function ArcadeZone() {
   const introRef    = useRef();
   const cabinetRef  = useRef();
   const controlsRef = useRef();
-  const dockRef     = useRef();
   const reelsRef    = useRef([]);
   const reelsOffset = useRef([0, 0, 0]);
 
@@ -64,14 +63,6 @@ export default function ArcadeZone() {
         { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
         "-=0.65"
       );
-      if (dockRef.current) {
-        cabTl.fromTo(
-          dockRef.current.children,
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.4, stagger: 0.1, ease: "power3.out" },
-          "-=0.35"
-        );
-      }
     }, sectionRef);
 
     // initialise reel strip positions
@@ -196,32 +187,30 @@ export default function ArcadeZone() {
               </div>
             </div>
 
-            {/* ── CABINET BODY ── */}
-            <div className="cab-body">
-              {/* ── SCREEN BEZEL ── */}
-              <div className="cab-screen">
-                <div className="cab-screen__crt" />
-                <div className="cab-screen__header">
-                  <span className="cab-screen__sys">SYS://GAME_SELECT</span>
-                  <span className={`cab-screen__credits${credits <= 2 ? " cab-screen__credits--low" : ""}`}>
-                    CREDITS: {String(credits).padStart(2, "0")}
-                  </span>
-                </div>
+            {/* ── SCREEN BEZEL ── */}
+            <div className="cab-screen">
+              <div className="cab-screen__crt" />
+              <div className="cab-screen__header">
+                <span className="cab-screen__sys">SYS://GAME_SELECT</span>
+                <span className={`cab-screen__credits${credits <= 2 ? " cab-screen__credits--low" : ""}`}>
+                  CREDITS: {String(credits).padStart(2, "0")}
+                </span>
+              </div>
 
-                {/* ── REELS ── */}
-                <div className="cab-reels">
-                  <span className="cab-reels__arrow">◀</span>
-                  <div className="cab-reels__row">
-                    {/* FIX 3: highlight uses selectedGame accent */}
-                    <div
-                      className="cab-reels__highlight"
-                      style={{
-                        borderColor: selectedGame
-                          ? `${selectedGame.color}aa`
-                          : "rgba(255,255,255,0.06)",
-                        boxShadow: selectedGame
-                          ? `0 0 20px ${selectedGame.color}44, inset 0 0 20px ${selectedGame.color}0a`
-                          : "none",
+              {/* ── REELS ── */}
+              <div className="cab-reels">
+                <span className="cab-reels__arrow">◀</span>
+                <div className="cab-reels__row">
+                  {/* FIX 3: highlight uses selectedGame accent */}
+                  <div
+                    className="cab-reels__highlight"
+                    style={{
+                      borderColor: selectedGame
+                        ? `${selectedGame.color}aa`
+                        : "rgba(255,255,255,0.06)",
+                      boxShadow: selectedGame
+                        ? `0 0 20px ${selectedGame.color}44, inset 0 0 20px ${selectedGame.color}0a`
+                        : "none",
                       }}
                     />
                     {[0, 1, 2].map((ri) => (
@@ -300,7 +289,7 @@ export default function ArcadeZone() {
                 )}
               </div>
 
-              {/* ── CONTROLS DECK — FIX 4 ── */}
+              {/* ── CONTROLS DECK ── */}
               <div className="cab-controls" ref={controlsRef}>
 
                 {/* Coin Slot */}
@@ -351,37 +340,6 @@ export default function ArcadeZone() {
                 </div>
 
               </div>
-            </div>
-
-            {/* ── BASE PEDESTAL — FIX 5: 2×2 grid dock ── */}
-            <div className="cab-base">
-              <div className="cab-dock" ref={dockRef}>
-                {arcadeGames.map((g) => (
-                  <a
-                    href={g.play}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="cab-dock__chip"
-                    key={g.name}
-                  >
-                    <img
-                      src={g.image}
-                      alt={g.name}
-                      className="cab-dock__img"
-                      style={{ border: `2px solid ${g.color}55` }}
-                    />
-                    <span className="cab-dock__name">{g.name}</span>
-                    <span
-                      className="cab-dock__dot"
-                      style={{
-                        backgroundColor: g.color,
-                        boxShadow: `0 0 8px ${g.color}`,
-                      }}
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
 
           </div>
         </div>
