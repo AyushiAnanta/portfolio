@@ -93,22 +93,40 @@ export default function About() {
 
         
 
-        {/* Skills grid */}
+        {/* Grid of Mini Terminals */}
         <div className="about__skills-container">
           <h3 className="about__skills-title">Core Skills</h3>
-          <div className="about__skills-grid" ref={skillsRef}>
-            {Object.entries(skills).map(([category, items]) => (
-              <div className="about__skills-category" key={category}>
-                <h4>{category}</h4>
-                <div className="about__skills-list">
-                  {items.map((skill) => (
-                    <span className="about__skill-chip" key={skill}>
-                      {skill}
-                    </span>
-                  ))}
+          <div className="about__skills-terminal-grid" ref={skillsRef}>
+            {Object.entries(skills).map(([category, items]) => {
+              const cmdName = category.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+              return (
+                <div className="about__skills-terminal mini" key={category}>
+                  <div className="terminal-header">
+                    <div className="terminal-buttons">
+                      <span className="btn-close"></span>
+                      <span className="btn-min"></span>
+                      <span className="btn-max"></span>
+                    </div>
+                    <div className="terminal-title">{cmdName}.sh</div>
+                  </div>
+                  <div className="terminal-body">
+                    <div className="terminal-command">
+                      <span className="terminal-prompt">~</span> get-skills --{cmdName}
+                    </div>
+                    <div className="terminal-output-list">
+                      {items.map((skill) => (
+                        <div className="terminal-skill-item" key={skill}>
+                          <span className="terminal-bullet">&gt;</span> {skill}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="terminal-command mt-2">
+                      <span className="terminal-prompt">~</span> <span className="terminal-cursor"></span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
