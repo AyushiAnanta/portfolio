@@ -14,7 +14,7 @@ export const hero = {
 };
 
 export const about = {
-  bio: "CS undergrad at NIIT University (9.93 CGPA). I build at the intersection of AI and full-stack, from multilingual grievance platforms to LLM-powered detective games. Picked as a national finalist at CyberForHer out of 700+ applicants. I like my projects to actually do something.",
+  bio: "4rth year CS undergrad, with a knack for building stuff related to AI and full-stack, from multilingual grievance platforms to LLM-powered detective games. Picked as a national finalist at CyberForHer out of 700+ applicants. I like my projects to actually do something.",
 };
 
 export const projects = [
@@ -42,7 +42,7 @@ export const projects = [
     ],
     tags: ["MERN", "Gemini API", "FastAPI", "Vercel"],
     github: "https://github.com/AyushiAnanta/AI-Imposter",
-    demo: "https://ai-imposter-demo.vercel.app",
+    demo: "https://a-imposter.vercel.app/",
   },
   {
     name: "oopsTube",
@@ -54,7 +54,7 @@ export const projects = [
     ],
     tags: ["MERN", "JWT", "Cloudinary", "Express.js", "Node.js"],
     github: "https://github.com/AyushiAnanta/oopsTube",
-    demo: "https://oopstube-demo.vercel.app",
+    demo: "https://oops-tube.vercel.app/",
   },
 ];
 
@@ -94,7 +94,7 @@ export const education = [
     degree: "B.Tech in Computer Science",
     institution: "NIIT University",
     duration: "2023 – 2027 (Expected)",
-    grade: "CGPA: 9.93/10",
+    grade: "CGPA: 9.93",
   },
   {
     degree: "Class XII (CBSE)",
