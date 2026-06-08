@@ -43,9 +43,11 @@ export default function Projects() {
   const titleRef = useRef();
   const listRef = useRef();
   const detailRef = useRef();
+
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeTab, setActiveTab] = useState("Code");
   const [toast, setToast] = useState(null);
+  const [isAutoPlayActive, setIsAutoPlayActive] = useState(true);
 
   const showToast = (message) => {
     setToast(message);
@@ -53,6 +55,21 @@ export default function Projects() {
       setToast(null);
     }, 2500);
   };
+
+  // Auto-play tab carousel every 5 seconds
+  useEffect(() => {
+    if (!selectedProject || !isAutoPlayActive) return;
+
+    const tabsList = ["Code", "Issues", "Pull requests", "Actions", "Settings"];
+    const timer = setTimeout(() => {
+      setActiveTab((prevTab) => {
+        const nextIndex = (tabsList.indexOf(prevTab) + 1) % tabsList.length;
+        return tabsList[nextIndex];
+      });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [selectedProject, activeTab, isAutoPlayActive]);
 
   // Scroll trigger + initial list animation
   useEffect(() => {
@@ -94,6 +111,7 @@ export default function Projects() {
   const openProject = (project) => {
     setSelectedProject(project);
     setActiveTab("Code"); // Default tab
+    setIsAutoPlayActive(true); // Reset autoplay
     gsap.to(listRef.current, {
       opacity: 0, x: -30, duration: 0.3, ease: "power2.in",
       onComplete: () => {
@@ -111,6 +129,7 @@ export default function Projects() {
         gsap.set(detailRef.current, { display: "none" });
         setSelectedProject(null);
         setActiveTab("Code");
+        setIsAutoPlayActive(true); // Reset autoplay
         gsap.set(listRef.current, { display: "flex", opacity: 0, x: -30 });
         gsap.to(listRef.current, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" });
       }
@@ -142,7 +161,6 @@ export default function Projects() {
                 onKeyDown={(e) => e.key === "Enter" && openProject(p)}
                 aria-label={`Open ${p.name} repository details`}
               >
-                {/* Left: name + description + meta */}
                 <div className="repo-row__main">
                   <div className="repo-row__header">
                     <span className="repo-row__icon">
@@ -174,29 +192,12 @@ export default function Projects() {
                   </div>
                 </div>
 
-                {/* Right: action buttons */}
                 <div className="repo-row__actions" onClick={(e) => e.stopPropagation()}>
                   {p.demo && (
-                    <a
-                      href={p.demo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="repo-row__btn demo"
-                      aria-label={`${p.name} Live Demo`}
-                    >
-                      <FaExternalLinkAlt /> Live Demo
-                    </a>
+                    <a href={p.demo} target="_blank" rel="noopener noreferrer" className="repo-row__btn demo"><FaExternalLinkAlt /> Live Demo</a>
                   )}
                   {p.github && (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="repo-row__btn"
-                      aria-label={`${p.name} GitHub`}
-                    >
-                      <FaGithub /> GitHub
-                    </a>
+                    <a href={p.github} target="_blank" rel="noopener noreferrer" className="repo-row__btn"><FaGithub /> GitHub</a>
                   )}
                 </div>
               </div>
@@ -212,7 +213,6 @@ export default function Projects() {
             const lang = meta.lang || { name: "HTML", color: "#e34c26" };
             return (
               <>
-                {/* Breadcrumb */}
                 <div className="repo-detail__breadcrumb">
                   <button className="repo-detail__back" onClick={closeProject}>
                     <FaArrowLeft /> Back
@@ -223,7 +223,6 @@ export default function Projects() {
                   <span className="repo-detail__visibility">Public</span>
                 </div>
 
-                {/* Mock GitHub tabs */}
                 <div className="repo-detail__tabs">
                   {[
                     { name: "Code", icon: <FaCode /> },
@@ -237,36 +236,28 @@ export default function Projects() {
                       <button
                         key={tab.name}
                         className={`repo-detail__tab${isActive ? " active" : ""}`}
-                        onClick={() => setActiveTab(tab.name)}
-                        aria-label={`Open ${tab.name} tab`}
+                        onClick={() => {
+                          setActiveTab(tab.name);
+                          setIsAutoPlayActive(false); // Stop autoplay on user click
+                        }}
                       >
                         {tab.icon}
                         <span>{tab.name}</span>
-                        {tab.count !== undefined && (
-                          <span className="repo-detail__tab-count">{tab.count}</span>
-                        )}
+                        {tab.count !== undefined && <span className="repo-detail__tab-count">{tab.count}</span>}
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Body depending on activeTab */}
                 {activeTab === "Code" && (
                   <div className="repo-detail__body">
-                    {/* Left: main content */}
                     <div className="repo-detail__main">
-                      {/* Stats bar */}
                       <div className="repo-detail__stats-bar">
-                        <span className="repo-detail__stat">
-                          <FaStar /> <strong>{meta.star}</strong> stars
-                        </span>
-                        <span className="repo-detail__stat">
-                          <BiGitRepoForked /> <strong>{meta.fork}</strong> forks
-                        </span>
+                        <span className="repo-detail__stat"><FaStar /> <strong>{meta.star}</strong> stars</span>
+                        <span className="repo-detail__stat"><BiGitRepoForked /> <strong>{meta.fork}</strong> forks</span>
                         <span className="repo-detail__stat-updated">{meta.updatedAt}</span>
                       </div>
 
-                      {/* README-style content */}
                       <div className="repo-detail__readme">
                         <div className="repo-detail__readme-header">
                           <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
@@ -278,60 +269,30 @@ export default function Projects() {
                           <h3 className="repo-detail__readme-title">{p.name}</h3>
                           <p className="repo-detail__readme-subtitle">{p.subtitle}</p>
                           <p className="repo-detail__readme-desc">{p.desc}</p>
-
                           <h4 className="repo-detail__readme-h4">Highlights</h4>
                           <ul className="repo-detail__readme-list">
                             {p.bullets.map((bullet, idx) => (
-                              <li key={idx}>
-                                <span className="readme-bullet">▸</span>
-                                <span>{bullet}</span>
-                              </li>
+                              <li key={idx}><span className="readme-bullet">▸</span><span>{bullet}</span></li>
                             ))}
                           </ul>
-
                           <div className="repo-detail__readme-actions">
-                            {p.github && (
-                              <a
-                                href={p.github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="repo-detail__action-btn"
-                              >
-                                <FaGithub /> View on GitHub
-                              </a>
-                            )}
-                            {p.demo && (
-                              <a
-                                href={p.demo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="repo-detail__action-btn demo"
-                              >
-                                <FaExternalLinkAlt /> Live Demo
-                              </a>
-                            )}
+                            {p.github && <a href={p.github} target="_blank" rel="noopener noreferrer" className="repo-detail__action-btn"><FaGithub /> View on GitHub</a>}
+                            {p.demo && <a href={p.demo} target="_blank" rel="noopener noreferrer" className="repo-detail__action-btn demo"><FaExternalLinkAlt /> Live Demo</a>}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Right: About sidebar */}
                     <div className="repo-detail__sidebar">
                       <div className="repo-detail__about">
                         <h4>About</h4>
                         <p>{p.subtitle}</p>
                         <div className="repo-detail__sidebar-tags">
-                          {p.tags.map((tag) => (
-                            <span className="repo-detail__sidebar-tag" key={tag}>{tag}</span>
-                          ))}
+                          {p.tags.map((tag) => <span className="repo-detail__sidebar-tag" key={tag}>{tag}</span>)}
                         </div>
                         <div className="repo-detail__sidebar-stats">
-                          <div className="repo-detail__sidebar-stat">
-                            <FaStar /> <span><strong>{meta.star}</strong> stars</span>
-                          </div>
-                          <div className="repo-detail__sidebar-stat">
-                            <BiGitRepoForked /> <span><strong>{meta.fork}</strong> forks</span>
-                          </div>
+                          <div className="repo-detail__sidebar-stat"><FaStar /> <span><strong>{meta.star}</strong> stars</span></div>
+                          <div className="repo-detail__sidebar-stat"><BiGitRepoForked /> <span><strong>{meta.fork}</strong> forks</span></div>
                           <div className="repo-detail__sidebar-stat lang-row">
                             <span className="repo-detail__lang-dot" style={{ backgroundColor: lang.color }} />
                             <span>{lang.name}</span>
@@ -346,15 +307,8 @@ export default function Projects() {
                   <div className="repo-detail__empty-state">
                     <FaExclamationCircle className="repo-detail__empty-icon" />
                     <h3 className="repo-detail__empty-title">0 Open Issues</h3>
-                    <p className="repo-detail__empty-desc">
-                      No issues because I am perfect.
-                    </p>
-                    <button 
-                      className="repo-detail__empty-btn"
-                      onClick={() => showToast("Access Denied: Perfection cannot be reported. 🚫")}
-                    >
-                      New Issue
-                    </button>
+                    <p className="repo-detail__empty-desc">No issues because I am perfect.</p>
+                    <button className="repo-detail__empty-btn" onClick={() => showToast("Access Denied: Perfection cannot be reported. 🚫")}>New Issue</button>
                   </div>
                 )}
 
@@ -362,48 +316,21 @@ export default function Projects() {
                   <div className="repo-detail__empty-state">
                     <BiGitPullRequest className="repo-detail__empty-icon" />
                     <h3 className="repo-detail__empty-title">0 Open Pull Requests</h3>
-                    <p className="repo-detail__empty-desc">
-                      Why wait for peer reviews when you write masterpiece code? All branches are merged.
-                    </p>
-                    <button 
-                      className="repo-detail__empty-btn"
-                      onClick={() => showToast("All branches are already up to date with main. ✅")}
-                    >
-                      New Pull Request
-                    </button>
+                    <p className="repo-detail__empty-desc">Why wait for peer reviews when you write masterpiece code? All branches are merged.</p>
+                    <button className="repo-detail__empty-btn" onClick={() => showToast("All branches are already up to date with main. ✅")}>New Pull Request</button>
                   </div>
                 )}
 
                 {activeTab === "Actions" && (
                   <div className="repo-detail__actions-panel">
                     <div className="repo-detail__actions-log">
-                      <div className="repo-detail__actions-log-title">
-                        <FaCheckCircle className="repo-detail__log-success" /> All checks passed
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ Ego Check</span>
-                        <span className="repo-detail__log-success">Exceeded limits (0.01s)</span>
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ Coffee Intake</span>
-                        <span className="repo-detail__log-success">Peak optimization (120mg) (0.42s)</span>
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ StackOverflow visits</span>
-                        <span className="repo-detail__log-success">0 (No help needed) (0.00s)</span>
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ CSS Centering</span>
-                        <span className="repo-detail__log-success">Mastered on first try (0.02s)</span>
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ Bugs Written</span>
-                        <span className="repo-detail__log-success">0 (0.00s)</span>
-                      </div>
-                      <div className="repo-detail__log-line">
-                        <span>✓ Git commits</span>
-                        <span className="repo-detail__log-success">Shipped & flexing on Vercel (0.50s)</span>
-                      </div>
+                      <div className="repo-detail__actions-log-title"><FaCheckCircle className="repo-detail__log-success" /> All checks passed</div>
+                      <div className="repo-detail__log-line"><span>✓ Ego Check</span><span className="repo-detail__log-success">Exceeded limits (0.01s)</span></div>
+                      <div className="repo-detail__log-line"><span>✓ Coffee Intake</span><span className="repo-detail__log-success">Peak optimization (120mg) (0.42s)</span></div>
+                      <div className="repo-detail__log-line"><span>✓ StackOverflow visits</span><span className="repo-detail__log-success">0 (No help needed) (0.00s)</span></div>
+                      <div className="repo-detail__log-line"><span>✓ CSS Centering</span><span className="repo-detail__log-success">Mastered on first try (0.02s)</span></div>
+                      <div className="repo-detail__log-line"><span>✓ Bugs Written</span><span className="repo-detail__log-success">0 (0.00s)</span></div>
+                      <div className="repo-detail__log-line"><span>✓ Git commits</span><span className="repo-detail__log-success">Shipped & flexing on Vercel (0.50s)</span></div>
                     </div>
                   </div>
                 )}
@@ -411,36 +338,28 @@ export default function Projects() {
                 {activeTab === "Settings" && (
                   <div className="repo-detail__settings-panel">
                     <h3 className="repo-detail__settings-title">Repository Settings</h3>
-                    <p className="repo-detail__settings-desc">
-                      This repository is maintained by a solo developer. Settings are locked to prevent unsolicited opinions.
-                    </p>
+                    <p className="repo-detail__settings-desc">This repository is maintained by a solo developer. Settings are locked to prevent unsolicited opinions.</p>
                     <div className="repo-detail__settings-options">
                       <div className="repo-detail__settings-option">
                         <div className="repo-detail__settings-option-label">
                           <span className="repo-detail__option-title">God Mode</span>
                           <span className="repo-detail__option-desc">Ensure developer performance is permanently elevated</span>
                         </div>
-                        <div className="repo-detail__toggle active">
-                          <div className="repo-detail__toggle-handle" />
-                        </div>
+                        <div className="repo-detail__toggle active"><div className="repo-detail__toggle-handle" /></div>
                       </div>
                       <div className="repo-detail__settings-option">
                         <div className="repo-detail__settings-option-label">
                           <span className="repo-detail__option-title">Auto-fix Bugs</span>
                           <span className="repo-detail__option-desc">Instantly resolve compile errors on keypress</span>
                         </div>
-                        <div className="repo-detail__toggle active">
-                          <div className="repo-detail__toggle-handle" />
-                        </div>
+                        <div className="repo-detail__toggle active"><div className="repo-detail__toggle-handle" /></div>
                       </div>
                       <div className="repo-detail__settings-option">
                         <div className="repo-detail__settings-option-label">
                           <span className="repo-detail__option-title">Accept Constructive Criticism</span>
                           <span className="repo-detail__option-desc">Enable pull request comments containing suggestions</span>
                         </div>
-                        <div className="repo-detail__toggle">
-                          <div className="repo-detail__toggle-handle" />
-                        </div>
+                        <div className="repo-detail__toggle"><div className="repo-detail__toggle-handle" /></div>
                       </div>
                     </div>
                   </div>
@@ -449,7 +368,6 @@ export default function Projects() {
             );
           })()}
         </div>
-
       </div>
 
       {toast && (
