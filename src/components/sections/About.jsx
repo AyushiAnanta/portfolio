@@ -58,10 +58,16 @@ export default function About() {
         "-=0.3"
       )
       .fromTo(
-        skillsRef.current.children,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out" },
+        skillsRef.current,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" },
         "-=0.3"
+      )
+      .fromTo(
+        skillsRef.current.querySelectorAll(".terminal-category-col"),
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: "power3.out" },
+        "-=0.4"
       );
     }, sectionRef);
 
@@ -93,26 +99,27 @@ export default function About() {
 
         
 
-        {/* Grid of Mini Terminals */}
+        {/* Single Terminal with All Skills */}
         <div className="about__skills-container">
           <h3 className="about__skills-title">Core Skills</h3>
-          <div className="about__skills-terminal-grid" ref={skillsRef}>
-            {Object.entries(skills).map(([category, items]) => {
-              const cmdName = category.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
-              return (
-                <div className="about__skills-terminal mini" key={category}>
-                  <div className="terminal-header">
-                    <div className="terminal-buttons">
-                      <span className="btn-close"></span>
-                      <span className="btn-min"></span>
-                      <span className="btn-max"></span>
-                    </div>
-                    <div className="terminal-title">{cmdName}.sh</div>
-                  </div>
-                  <div className="terminal-body">
-                    <div className="terminal-command">
-                      <span className="terminal-prompt">~</span> get-skills --{cmdName}
-                    </div>
+          <div className="about__skills-terminal" ref={skillsRef}>
+            <div className="terminal-header">
+              <div className="terminal-buttons">
+                <span className="btn-close"></span>
+                <span className="btn-min"></span>
+                <span className="btn-max"></span>
+              </div>
+              <div className="terminal-title">get-skills.sh</div>
+            </div>
+            <div className="terminal-body">
+              <div className="terminal-command">
+                <span className="terminal-prompt">~</span> ./get-skills.sh --all
+              </div>
+
+              <div className="terminal-grid">
+                {Object.entries(skills).map(([category, items]) => (
+                  <div className="terminal-category-col" key={category}>
+                    <div className="terminal-category-header">[ {category.toUpperCase()} ]</div>
                     <div className="terminal-output-list">
                       {items.map((skill) => (
                         <div className="terminal-skill-item" key={skill}>
@@ -120,13 +127,14 @@ export default function About() {
                         </div>
                       ))}
                     </div>
-                    <div className="terminal-command mt-2">
-                      <span className="terminal-prompt">~</span> <span className="terminal-cursor"></span>
-                    </div>
                   </div>
-                </div>
-              );
-            })}
+                ))}
+              </div>
+
+              <div className="terminal-command mt-2">
+                <span className="terminal-prompt">~</span> <span className="terminal-cursor"></span>
+              </div>
+            </div>
           </div>
         </div>
 
