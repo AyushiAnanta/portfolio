@@ -29,7 +29,7 @@ export const projects = [
     ],
     tags: ["FastAPI", "MERN", "Groq API", "Tesseract OCR", "LLaMA"],
     github: "https://github.com/AyushiAnanta/Sahayak",
-    demo: "",
+    demo: "https://sahayak-pink.vercel.app/",
   },
   {
     name: "AI Imposter",
