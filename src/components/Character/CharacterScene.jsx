@@ -29,7 +29,7 @@ const get3DPositionForDOMElement = (id, camera) => {
 };
 
 function Model() {
-  const { scene } = useGLTF("/model/avatarfinal_compressed.glb");
+  const { scene } = useGLTF("/model/avatar_optimized_webp.glb");
   const groupRef = useRef();
   const clock = useRef(0);
   const { camera } = useThree();
