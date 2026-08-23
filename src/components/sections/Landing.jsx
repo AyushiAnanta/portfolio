@@ -24,7 +24,7 @@ function Letter({ eng, hin }) {
   );
 }
 
-export default function Landing({ heroRef }) {
+export default function Landing({ heroRef, loaded }) {
   const contentRef = useRef();
   const canvasRef = useRef();
 
@@ -37,8 +37,10 @@ export default function Landing({ heroRef }) {
   const socialsRef = useRef();
 
   useEffect(() => {
-    // Entry stagger
-    const entryTl = gsap.timeline({ delay: 2.2 });
+    if (!loaded) return;
+
+    // Entry stagger triggers smoothly when loader dismisses
+    const entryTl = gsap.timeline({ delay: 0.1 });
     entryTl
       .fromTo(greetRef.current,
         { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" })
@@ -53,38 +55,42 @@ export default function Landing({ heroRef }) {
       .fromTo(socialsRef.current,
         { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
 
+    return () => entryTl.kill();
+  }, [loaded]);
+
     // --- Zoom-out scroll effect ---
-    const ctx = gsap.context(() => {
-      // Text side â€” shrinks + fades as you scroll
-      gsap.to(contentRef.current, {
-        scale: 0.75,
-        opacity: 0,
-        y: -60,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1,           // ties directly to scroll position
-        },
+    useEffect(() => {
+      const ctx = gsap.context(() => {
+        // Text side — shrinks + fades as you scroll
+        gsap.to(contentRef.current, {
+          scale: 0.75,
+          opacity: 0,
+          y: -60,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,           // ties directly to scroll position
+          },
+        });
+
+        // Canvas/model side — zooms out slightly slower for depth
+        gsap.to(canvasRef.current, {
+          scale: 0.85,
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.5,         // slightly lazier than text
+          },
+        });
       });
 
-      // Canvas/model side â€” zooms out slightly slower for depth
-      gsap.to(canvasRef.current, {
-        scale: 0.85,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: heroRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.5,         // slightly lazier than text
-        },
-      });
-    });
-
-    return () => ctx.revert();
-  }, []);
+      return () => ctx.revert();
+    }, [heroRef]);
 
   return (
     <section className="landing" ref={heroRef} id="home">

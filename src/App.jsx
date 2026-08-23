@@ -11,17 +11,23 @@ import CursorOrb from "./components/CursorOrb";
 import CharacterScene from "./components/Character/CharacterScene";
 
 export default function App() {
+  const [modelLoaded, setModelLoaded] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const heroRef = useRef();
 
   return (
     <>
       <CursorOrb />
-      <CharacterScene />
-      {!loaded && <Loader onComplete={() => setLoaded(true)} />}
+      <CharacterScene onModelLoaded={() => setModelLoaded(true)} />
+      {!loaded && (
+        <Loader
+          isReady={modelLoaded}
+          onComplete={() => setLoaded(true)}
+        />
+      )}
       <Navbar />
       <main>
-        <Landing heroRef={heroRef} />
+        <Landing heroRef={heroRef} loaded={loaded} />
         <About />
         <Projects />
         <ArcadeZone />

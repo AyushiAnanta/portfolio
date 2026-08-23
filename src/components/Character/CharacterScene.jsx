@@ -28,7 +28,9 @@ const get3DPositionForDOMElement = (id, camera) => {
   return camera.position.clone().add(dir.multiplyScalar(distance));
 };
 
-function Model() {
+useGLTF.preload("/model/avatar_optimized_webp.glb");
+
+function Model({ onLoaded }) {
   const { scene } = useGLTF("/model/avatar_optimized_webp.glb");
   const groupRef = useRef();
   const clock = useRef(0);
@@ -103,6 +105,9 @@ function Model() {
     window.addEventListener("avatar-spin", triggerSpin);
     window.addEventListener("section-change", handleSectionChange);
 
+    // Signal that 3D model is loaded, parsed, and rendered in scene
+    onLoaded?.();
+
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("avatar-spin", triggerSpin);
@@ -110,7 +115,7 @@ function Model() {
       clearInterval(spinInterval);
       trigger.kill();
     };
-  }, []);
+  }, [onLoaded]);
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
@@ -204,7 +209,7 @@ function Model() {
   );
 }
 
-export default function CharacterScene() {
+export default function CharacterScene({ onModelLoaded }) {
   return (
     <div className="global-canvas-container">
       <Canvas
@@ -212,7 +217,7 @@ export default function CharacterScene() {
         style={{ width: "100%", height: "100%", pointerEvents: "none" }}
       >
         <Suspense fallback={null}>
-          <Model />
+          <Model onLoaded={onModelLoaded} />
           <Environment preset="night" />
         </Suspense>
       </Canvas>
