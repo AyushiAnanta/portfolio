@@ -2,11 +2,7 @@ import { useEffect, useRef } from "react";
 import "../styles/CursorOrb.css";
 
 export default function CursorOrb() {
-  const orbRef = useRef();
-  const trailRef = useRef();
-  const pos = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
-  const raf = useRef();
+  const cursorRef = useRef();
   const lastTouchTime = useRef(0);
 
   useEffect(() => {
@@ -15,25 +11,10 @@ export default function CursorOrb() {
       if (Date.now() - lastTouchTime.current < 1000) {
         return;
       }
-      
-      orbRef.current?.classList.remove("cursor-hidden");
-      trailRef.current?.classList.remove("cursor-hidden");
 
-      pos.current.x = e.clientX;
-      pos.current.y = e.clientY;
-    };
-
-    const onMouseOver = (e) => {
-      if (Date.now() - lastTouchTime.current < 1000) {
-        return;
-      }
-
-      if (e.target && e.target.closest("a, button, .btn, [role='button'], .cab-coin")) {
-        orbRef.current?.classList.add("cursor-hover");
-        trailRef.current?.classList.add("cursor-hover");
-      } else {
-        orbRef.current?.classList.remove("cursor-hover");
-        trailRef.current?.classList.remove("cursor-hover");
+      if (cursorRef.current) {
+        cursorRef.current.classList.remove("cursor-hidden");
+        cursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       }
     };
 
@@ -41,62 +22,86 @@ export default function CursorOrb() {
       if (Date.now() - lastTouchTime.current < 1000) {
         return;
       }
-      orbRef.current?.classList.add("cursor-active");
-      trailRef.current?.classList.add("cursor-active");
+      cursorRef.current?.classList.add("cursor-active");
     };
 
     const onMouseUp = () => {
-      orbRef.current?.classList.remove("cursor-active");
-      trailRef.current?.classList.remove("cursor-active");
+      cursorRef.current?.classList.remove("cursor-active");
     };
 
     const onTouchStart = () => {
       lastTouchTime.current = Date.now();
-      orbRef.current?.classList.add("cursor-hidden");
-      trailRef.current?.classList.add("cursor-hidden");
+      cursorRef.current?.classList.add("cursor-hidden");
     };
 
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseover", onMouseOver);
-    window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mousedown", onMouseDown, { passive: true });
+    window.addEventListener("mouseup", onMouseUp, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
 
-    const loop = () => {
-      // Smooth lerp so orb lags slightly behind cursor — feels alive
-      current.current.x += (pos.current.x - current.current.x) * 0.12;
-      current.current.y += (pos.current.y - current.current.y) * 0.12;
-
-      if (orbRef.current) {
-        orbRef.current.style.transform =
-          `translate(${current.current.x - 10}px, ${current.current.y - 10}px)`;
-      }
-      // Trail is even lazier
-      if (trailRef.current) {
-        trailRef.current.style.transform =
-          `translate(${current.current.x - 20}px, ${current.current.y - 20}px)`;
-      }
-
-      raf.current = requestAnimationFrame(loop);
-    };
-
-    raf.current = requestAnimationFrame(loop);
     return () => {
       window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mouseup", onMouseUp);
       window.removeEventListener("touchstart", onTouchStart);
-      cancelAnimationFrame(raf.current);
     };
   }, []);
 
   return (
-    <>
-      {/* Outer glow trail */}
-      <div className="cursor-trail" ref={trailRef} />
-      {/* Inner orb */}
-      <div className="cursor-orb" ref={orbRef} />
-    </>
+    <div className="pixel-cursor" ref={cursorRef}>
+      <svg
+        viewBox="0 0 16 22"
+        width="20"
+        height="28"
+        className="pixel-cursor__svg"
+      >
+        {/* Drop Shadow */}
+        <g fill="rgba(0,0,0,0.4)">
+          <rect x="2" y="2" width="2" height="18" />
+          <rect x="4" y="4" width="2" height="14" />
+          <rect x="6" y="6" width="2" height="12" />
+          <rect x="8" y="8" width="2" height="10" />
+          <rect x="10" y="10" width="2" height="6" />
+          <rect x="12" y="12" width="2" height="3" />
+          <rect x="8" y="18" width="2" height="4" />
+          <rect x="10" y="20" width="2" height="2" />
+        </g>
+        {/* Dark Pixel Border */}
+        <g fill="#0b0b1a">
+          <rect x="0" y="0" width="2" height="18" />
+          <rect x="2" y="0" width="2" height="2" />
+          <rect x="2" y="16" width="2" height="2" />
+          <rect x="4" y="2" width="2" height="2" />
+          <rect x="4" y="14" width="2" height="2" />
+          <rect x="6" y="4" width="2" height="2" />
+          <rect x="6" y="12" width="4" height="2" />
+          <rect x="8" y="6" width="2" height="2" />
+          <rect x="6" y="14" width="2" height="4" />
+          <rect x="8" y="18" width="2" height="4" />
+          <rect x="10" y="8" width="2" height="2" />
+          <rect x="10" y="18" width="2" height="2" />
+          <rect x="12" y="10" width="2" height="2" />
+          <rect x="12" y="14" width="2" height="4" />
+          <rect x="14" y="12" width="2" height="2" />
+        </g>
+        {/* Main Purple Pixel Body */}
+        <g fill="#c084fc">
+          <rect x="2" y="2" width="2" height="14" />
+          <rect x="4" y="4" width="2" height="10" />
+          <rect x="6" y="6" width="2" height="6" />
+          <rect x="8" y="8" width="2" height="4" />
+          <rect x="10" y="10" width="2" height="2" />
+          <rect x="12" y="12" width="2" height="2" />
+          <rect x="8" y="14" width="2" height="4" />
+          <rect x="10" y="16" width="2" height="2" />
+        </g>
+        {/* White Accent Highlights */}
+        <g fill="#ffffff">
+          <rect x="2" y="2" width="2" height="10" />
+          <rect x="4" y="4" width="2" height="6" />
+          <rect x="6" y="6" width="2" height="2" />
+        </g>
+      </svg>
+    </div>
   );
 }

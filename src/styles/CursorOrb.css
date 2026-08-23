@@ -1,66 +1,40 @@
 /* Hide default cursor site-wide */
 *, *::before, *::after { cursor: none !important; }
 
-.cursor-orb {
+.pixel-cursor {
   position: fixed;
-  top: 0; left: 0;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #c084fc, #3a7bd5);
+  top: 0;
+  left: 0;
   pointer-events: none;
-  z-index: 99999;
-  mix-blend-mode: screen;
-  box-shadow:
-    0 0 8px #c084fc,
-    0 0 20px #7b5ea7,
-    0 0 40px rgba(123, 94, 167, 0.4);
-  transition: scale 0.2s, background-color 0.2s, box-shadow 0.2s;
+  z-index: 999999;
+  transform-origin: 0 0;
+  transition: none !important;
+  will-change: transform;
+  filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.45));
 }
 
-.cursor-trail {
-  position: fixed;
-  top: 0; left: 0;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(192, 132, 252, 0.3);
-  pointer-events: none;
-  z-index: 99998;
-  background: radial-gradient(
-    circle,
-    rgba(192, 132, 252, 0.08) 0%,
-    transparent 70%
-  );
-  transition: scale 0.25s ease-out, border-color 0.25s;
+.pixel-cursor.is-hover {
+  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.7));
 }
 
-/* Orb reacts to hovering links/buttons */
-.cursor-orb.cursor-hover {
-  opacity: 0 !important;
+.pixel-cursor.cursor-active {
+  transform: scale(0.9) !important;
 }
 
-.cursor-trail.cursor-hover {
-  opacity: 0 !important;
-}
-
-/* Active clicked state */
-.cursor-orb.cursor-active {
-  scale: 0.75;
-}
-
-.cursor-trail.cursor-active {
-  scale: 0.5;
+.pixel-cursor__svg {
+  display: block;
+  shape-rendering: crispEdges;
+  image-rendering: pixelated;
 }
 
 /* Hidden state for touch screens */
-.cursor-orb.cursor-hidden,
-.cursor-trail.cursor-hidden {
+.pixel-cursor.cursor-hidden {
   display: none !important;
 }
 
 /* Disable custom cursor on touch/mobile devices */
 @media (hover: none) and (pointer: coarse) {
-  .cursor-orb,
-  .cursor-trail {
+  .pixel-cursor {
     display: none !important;
   }
   *, *::before, *::after {
