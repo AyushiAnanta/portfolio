@@ -50,10 +50,6 @@ export default function Contact() {
               <FiMail className="contact-info__icon" />
               <span>{contact.email}</span>
             </a>
-            <a href={`tel:${contact.phone}`} className="contact-info__item">
-              <FiPhone className="contact-info__icon" />
-              <span>{contact.phone}</span>
-            </a>
           </div>
 
           {/* Social Row with Vertical Dividers as requested */}

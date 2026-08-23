@@ -214,8 +214,7 @@ export default function ArcadeZone() {
         <p className="arcade__tag">— the origin story</p>
         <h2 className="arcade__title" ref={titleRef}>Game Zone</h2>
         <p className="arcade__intro" ref={introRef}>
-          These were how I taught myself to code — messy, dumb, and I loved every second.
-          Hangman to Sahayak. That's the arc.
+          These games were how I taught myself to code — messy, dumb, and I loved every second.
         </p>
 
         {/* ═══ 3D CABINET SCENE ═══ */}

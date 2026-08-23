@@ -14,7 +14,7 @@ export const hero = {
 };
 
 export const about = {
-  bio: "4rth year CS undergrad, with a knack for building stuff related to AI and full-stack, from multilingual grievance platforms to LLM-powered detective games. Picked as a national finalist at CyberForHer out of 700+ applicants. I like my projects to actually do something.",
+  bio: " 4th-year CS undergrad (AI specialization), CyberForHer National Finalist out of 700+ applicants. I build systems that ship — a multilingual grievance platform serving five Indian languages, a RAG pipeline with hand-evaluated retrieval accuracy, an LLM detective game, and Voldy's Diary, an AI-backed whiteboard app built from the canvas rendering layer up. I like projects that do something.",
 };
 
 export const projects = [
