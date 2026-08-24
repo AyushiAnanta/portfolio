@@ -99,6 +99,15 @@ function play8BitSound(type, soundEnabled = true) {
   }
 }
 
+function resolveImgUrl(path) {
+  if (!path) return "";
+  const base = import.meta.env.BASE_URL || "/";
+  if (path.startsWith("/")) {
+    return `${base.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+  }
+  return path;
+}
+
 const getReelDimensions = () => {
   const width = typeof window !== "undefined" ? window.innerWidth : 1024;
   if (width <= 480) {
@@ -133,9 +142,9 @@ export default function ArcadeZone() {
   const [streak,        setStreak]        = useState(0);
   const [soundEnabled,  setSoundEnabled]  = useState(true);
   const [spinning,      setSpinning]      = useState(false);
-  const [selectedGame,  setSelectedGame]  = useState(null);
-  const [statusText,    setStatusText]    = useState("INSERT COIN & PULL LEVER");
-  const [statusColor,   setStatusColor]   = useState("var(--arcade-yellow)");
+  const [selectedGame,  setSelectedGame]  = useState(arcadeGames[0]);
+  const [statusText,    setStatusText]    = useState("READY TO PLAY // PULL LEVER TO SPIN");
+  const [statusColor,   setStatusColor]   = useState("var(--arcade-green)");
   const [leverPulled,   setLeverPulled]   = useState(false);
   const [isCoinDropping,setIsCoinDropping]= useState(false);
   const [scorePopup,    setScorePopup]    = useState(null);
@@ -465,16 +474,25 @@ export default function ArcadeZone() {
                           <div
                             className="cab-reels__card"
                             key={idx}
-                            style={{ borderColor: `${g.color}44` }}
+                            style={{ borderColor: `${g.color}44`, cursor: "pointer" }}
+                            onClick={() => {
+                              if (spinning) return;
+                              play8BitSound("click", soundEnabled);
+                              setSelectedGame(g);
+                              setStatusText(`★ ${g.name.toUpperCase()} READY TO PLAY ★`);
+                              setStatusColor(g.color);
+                            }}
+                            title={`Click to select & play ${g.name}`}
                           >
                             <div
                               className="cab-reels__glow"
                               style={{ boxShadow: `0 0 15px ${g.color}33` }}
                             />
                             <img
-                              src={g.image}
+                              src={resolveImgUrl(g.image)}
                               alt={g.name}
                               className="cab-reels__icon"
+                              loading="lazy"
                             />
                             <span className="cab-reels__name" style={{ color: g.color }}>
                               {g.name}
@@ -502,12 +520,21 @@ export default function ArcadeZone() {
                       boxShadow: `0 0 25px ${selectedGame.color}33, inset 0 0 15px ${selectedGame.color}15`,
                     }}
                   >
-                    <img
-                      src={selectedGame.image}
-                      alt={selectedGame.name}
-                      className="cab-result__img"
-                      style={{ borderColor: selectedGame.color }}
-                    />
+                    <a
+                      href={selectedGame.play}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Play ${selectedGame.name}`}
+                      style={{ display: "contents" }}
+                    >
+                      <img
+                        src={resolveImgUrl(selectedGame.image)}
+                        alt={selectedGame.name}
+                        className="cab-result__img"
+                        style={{ borderColor: selectedGame.color }}
+                        loading="lazy"
+                      />
+                    </a>
                     <div className="cab-result__info">
                       <div className="cab-result__badge-row">
                         <span className="cab-result__badge" style={{ borderColor: selectedGame.color, color: selectedGame.color }}>
@@ -515,9 +542,16 @@ export default function ArcadeZone() {
                         </span>
                         <span className="cab-result__tag">{selectedGame.tag}</span>
                       </div>
-                      <div className="cab-result__name" style={{ color: selectedGame.color }}>
-                        {selectedGame.name}
-                      </div>
+                      <a
+                        href={selectedGame.play}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cab-result__name-link"
+                      >
+                        <div className="cab-result__name" style={{ color: selectedGame.color }}>
+                          {selectedGame.name}
+                        </div>
+                      </a>
                       <div className="cab-result__desc">{selectedGame.desc}</div>
                     </div>
                     <div className="cab-result__actions">
@@ -653,29 +687,40 @@ export default function ArcadeZone() {
               </div>
 
               {/* Game Cartridge Image with Scanlines & Play Overlay */}
-              <div className="arcade-card__img-container">
-                <img src={game.image} alt={game.name} className="arcade-card__img" />
+              <a
+                href={game.play}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="arcade-card__img-container"
+                title={`Play ${game.name}`}
+              >
+                <img src={resolveImgUrl(game.image)} alt={game.name} className="arcade-card__img" loading="lazy" />
                 <div className="arcade-card__crt-overlay" />
                 <div className="arcade-card__overlay">
-                  <a
-                    href={game.play}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <span
                     className="arcade-card__play-btn"
                     style={{ background: game.color, boxShadow: `0 0 20px ${game.color}aa` }}
                     aria-label={`Play ${game.name}`}
                   >
                     <FaPlay />
-                  </a>
+                  </span>
                 </div>
-              </div>
+              </a>
 
               {/* Cartridge Content */}
               <div className="arcade-card__content">
                 <div className="arcade-card__name-row">
-                  <h3 className="arcade-card__name" style={{ color: game.color }}>
-                    {game.name}
-                  </h3>
+                  <a
+                    href={game.play}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="arcade-card__name-link"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <h3 className="arcade-card__name" style={{ color: game.color }}>
+                      {game.name}
+                    </h3>
+                  </a>
                   <span className="arcade-card__diff" title={`Difficulty: ${game.difficulty}`}>
                     {game.difficulty === "EASY" && "★☆☆ EASY"}
                     {game.difficulty === "MEDIUM" && "★★☆ MED"}

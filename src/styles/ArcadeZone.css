@@ -671,6 +671,17 @@
   color: var(--text-muted);
 }
 
+.cab-result__name-link {
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+}
+
+.cab-result__name-link:hover .cab-result__name {
+  filter: brightness(1.25);
+  text-decoration: underline;
+}
+
 .cab-result__name {
   font-family: var(--arcade-font-pixel);
   font-size: 0.8rem;
